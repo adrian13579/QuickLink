@@ -28,7 +28,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot   = $PSScriptRoot
-$projectFile = "$repoRoot\ResourceFinder\QuickLink.csproj"
+$projectFile = "$repoRoot\src\QuickLink.csproj"
 $certSubject = 'CN=AppPublisher'
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────
@@ -47,12 +47,12 @@ if ($LASTEXITCODE -ne 0) { throw "Build failed (exit $LASTEXITCODE)." }
 Write-Host "`n[2/4] Locating MSIX package..." -ForegroundColor Cyan
 
 $msix = Get-ChildItem -Recurse -Filter '*.msix' `
-    -Path "$repoRoot\ResourceFinder\bin" `
+    -Path "$repoRoot\src\bin" `
     -ErrorAction SilentlyContinue |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 
-if (-not $msix) { throw "No .msix file found under ResourceFinder\bin. Build may not have produced a package." }
+if (-not $msix) { throw "No .msix file found under src\bin. Build may not have produced a package." }
 Write-Host "  Found: $($msix.FullName)" -ForegroundColor Gray
 
 # ── 3. Certificate ───────────────────────────────────────────────────────────
