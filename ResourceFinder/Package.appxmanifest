@@ -16,7 +16,7 @@
   <mp:PhoneIdentity PhoneProductId="97F7C7E7-FAE9-41E1-A5AF-45F345792428" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>ResourceFinder</DisplayName>
+    <DisplayName>Resource Finder</DisplayName>
     <PublisherDisplayName>AppPublisher</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -35,8 +35,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ResourceFinder"
-        Description="ResourceFinder"
+        DisplayName="Resource Finder"
+        Description="Resource Finder"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
