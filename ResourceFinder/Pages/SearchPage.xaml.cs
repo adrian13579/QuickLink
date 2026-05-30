@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using ResourceFinder.Models;
+using ResourceFinder.Services;
 using ResourceFinder.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
@@ -13,18 +14,24 @@ public sealed partial class SearchPage : Page
 {
     public SearchViewModel ViewModel { get; }
     private CancellationTokenSource? _notifyCts;
+    private readonly SettingsService _settings;
+
+    public string CurrentHotkey => _settings.Current.Hotkey;
 
     public SearchPage()
     {
+        _settings = App.Services.GetRequiredService<SettingsService>();
         ViewModel = App.Services.GetRequiredService<SearchViewModel>();
         InitializeComponent();
         Loaded += (_, _) => EnsureFocused();
+        _settings.Changed += () => DispatcherQueue.TryEnqueue(Bindings.Update);
     }
 
     protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         _ = ViewModel.LoadResultsAsync(ViewModel.SearchText);
+        Bindings.Update();
     }
 
     public void FocusSearchBox() => EnsureFocused();
