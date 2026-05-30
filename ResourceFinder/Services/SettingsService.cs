@@ -34,6 +34,11 @@ public class SettingsService
         catch { }
     }
 
-    public void Save() =>
+    public event Action? Changed;
+
+    public void Save()
+    {
         File.WriteAllText(_settingsPath, JsonSerializer.Serialize(Current, _json));
+        Changed?.Invoke();
+    }
 }

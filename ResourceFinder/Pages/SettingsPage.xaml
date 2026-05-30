@@ -8,82 +8,217 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <ScrollViewer>
-        <StackPanel Padding="24,20" Spacing="20" MaxWidth="640">
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Escape" Invoked="Escape_Invoked" />
+        <KeyboardAccelerator Key="Back" Invoked="Backspace_Invoked" />
+    </Page.KeyboardAccelerators>
 
-            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <Button
-                    Click="Back_Click"
-                    ToolTipService.ToolTip="Back"
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Margin="24,20,24,32" Spacing="20">
+
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button
+                        Click="Back_Click"
+                        ToolTipService.ToolTip="Back"
+                        CornerRadius="8"
+                        Width="36"
+                        Height="36"
+                        Padding="0">
+                        <FontIcon Glyph="&#xE72B;" FontSize="14" />
+                    </Button>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Settings" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Data File Path card -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
                     CornerRadius="8"
-                    Width="36"
-                    Height="36"
-                    Padding="0">
-                    <FontIcon Glyph="&#xE72B;" FontSize="14" />
-                </Button>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Settings" VerticalAlignment="Center" />
-            </StackPanel>
+                    Padding="16">
+                    <StackPanel Spacing="14">
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <Border
+                                Width="36"
+                                Height="36"
+                                CornerRadius="8"
+                                Background="{ThemeResource AccentFillColorSecondaryBrush}">
+                                <FontIcon
+                                    Glyph="&#xE8B7;"
+                                    FontSize="18"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="Data File Path" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                <TextBlock
+                                    Text="JSON file where resources are stored."
+                                    Opacity="0.6"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource CaptionTextBlockStyle}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                x:Name="DataFilePathBox"
+                                FontFamily="Consolas"
+                                PlaceholderText="Path to resources.json"
+                                CornerRadius="6" />
+                            <Button
+                                Grid.Column="1"
+                                Content="Browse…"
+                                Click="Browse_Click"
+                                VerticalAlignment="Center"
+                                CornerRadius="6" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
 
-            <!-- Data File Path card -->
-            <Border
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="16">
-                <StackPanel Spacing="14">
-                    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                        <Border
-                            Width="36"
-                            Height="36"
-                            CornerRadius="8"
-                            Background="{ThemeResource AccentFillColorSecondaryBrush}">
-                            <FontIcon
-                                Glyph="&#xE8B7;"
-                                FontSize="18"
-                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center" />
-                        </Border>
-                        <StackPanel Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="Data File Path" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                            <TextBlock
-                                Text="JSON file where resources are stored. Takes effect after restarting."
-                                Opacity="0.6"
-                                TextWrapping="Wrap"
-                                Style="{StaticResource CaptionTextBlockStyle}" />
+                <!-- Launch Hotkey card -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                    <StackPanel Spacing="14">
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <Border
+                                Width="36"
+                                Height="36"
+                                CornerRadius="8"
+                                Background="{ThemeResource AccentFillColorSecondaryBrush}">
+                                <FontIcon
+                                    Glyph="&#xE765;"
+                                    FontSize="18"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="Launch Hotkey" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                <TextBlock
+                                    Text="Global shortcut to quickly show the app."
+                                    Opacity="0.6"
+                                    Style="{StaticResource CaptionTextBlockStyle}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                x:Name="HotkeyBox"
+                                FontFamily="Consolas"
+                                PlaceholderText="e.g. Ctrl+Shift+Space"
+                                CornerRadius="6"
+                                PreviewKeyDown="HotkeyBox_PreviewKeyDown"
+                                GotFocus="HotkeyBox_GotFocus"
+                                LostFocus="HotkeyBox_LostFocus" />
+                            <Button
+                                x:Name="RecordButton"
+                                Grid.Column="1"
+                                Content="Change"
+                                Click="RecordHotkey_Click"
+                                VerticalAlignment="Center"
+                                CornerRadius="6" />
+                        </Grid>
+                        <TextBlock
+                            x:Name="HotkeyErrorText"
+                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Visibility="Collapsed"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Window Size card -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                    <StackPanel Spacing="14">
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <Border
+                                Width="36"
+                                Height="36"
+                                CornerRadius="8"
+                                Background="{ThemeResource AccentFillColorSecondaryBrush}">
+                                <FontIcon
+                                    Glyph="&#xE740;"
+                                    FontSize="18"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="Window Size" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                <TextBlock
+                                    Text="Default size when the window opens. Minimum 700 × 500."
+                                    Opacity="0.6"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource CaptionTextBlockStyle}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Width" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
+                                <NumberBox
+                                    x:Name="WindowWidthBox"
+                                    Minimum="700"
+                                    Maximum="3840"
+                                    SmallChange="50"
+                                    LargeChange="100"
+                                    SpinButtonPlacementMode="Compact"
+                                    Width="140"
+                                    CornerRadius="6" />
+                            </StackPanel>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Height" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
+                                <NumberBox
+                                    x:Name="WindowHeightBox"
+                                    Minimum="500"
+                                    Maximum="2160"
+                                    SmallChange="50"
+                                    LargeChange="100"
+                                    SpinButtonPlacementMode="Compact"
+                                    Width="140"
+                                    CornerRadius="6" />
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                    <Grid ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                            x:Name="DataFilePathBox"
-                            FontFamily="Consolas"
-                            PlaceholderText="Path to resources.json"
-                            CornerRadius="6" />
-                        <Button
-                            Grid.Column="1"
-                            Content="Browse…"
-                            Click="Browse_Click"
-                            VerticalAlignment="Center"
-                            CornerRadius="6" />
-                    </Grid>
-                </StackPanel>
-            </Border>
+                </Border>
 
-            <Button
-                Style="{StaticResource AccentButtonStyle}"
-                CornerRadius="6"
-                Click="Save_Click">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                    <FontIcon Glyph="&#xE74E;" FontSize="13" />
-                    <TextBlock Text="Save" />
-                </StackPanel>
-            </Button>
+                <Button
+                    Style="{StaticResource AccentButtonStyle}"
+                    CornerRadius="6"
+                    Click="Save_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE74E;" FontSize="13" />
+                        <TextBlock Text="Save" />
+                    </StackPanel>
+                </Button>
 
-        </StackPanel>
-    </ScrollViewer>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Floating notification -->
+        <InfoBar
+            x:Name="StatusBar"
+            IsOpen="False"
+            IsClosable="True"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Center"
+            MaxWidth="480"
+            Margin="0,0,0,24" />
+    </Grid>
 </Page>
