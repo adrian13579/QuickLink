@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace ResourceFinder.Services;
+namespace QuickLink.Services;
 
 public sealed class HotkeyService : IDisposable
 {

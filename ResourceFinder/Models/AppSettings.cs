@@ -1,4 +1,4 @@
-namespace ResourceFinder.Models;
+﻿namespace QuickLink.Models;
 
 public class AppSettings
 {

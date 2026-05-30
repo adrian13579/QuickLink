@@ -1,14 +1,14 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using ResourceFinder.Models;
-using ResourceFinder.Services;
-using ResourceFinder.ViewModels;
+using QuickLink.Models;
+using QuickLink.Services;
+using QuickLink.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 
-namespace ResourceFinder.Pages;
+namespace QuickLink.Pages;
 
 public sealed partial class SearchPage : Page
 {

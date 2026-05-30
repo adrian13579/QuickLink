@@ -1,14 +1,14 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using ResourceFinder.Services;
+using QuickLink.Services;
 using Windows.Storage.Pickers;
 using Windows.System;
 using Windows.UI.Core;
 
-namespace ResourceFinder.Pages;
+namespace QuickLink.Pages;
 
 public sealed partial class SettingsPage : Page
 {
@@ -225,7 +225,7 @@ public sealed partial class SettingsPage : Page
         _settings.Current.WindowHeight = newH;
 
         _settings.Save();
-        (App.MainWindow as ResourceFinder.MainWindow)?.ApplySavedWindowSize();
+        (App.MainWindow as QuickLink.MainWindow)?.ApplySavedWindowSize();
         ShowNotification("Settings saved.");
     }
 

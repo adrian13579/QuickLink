@@ -1,6 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ResourceFinder.Models;
+namespace QuickLink.Models;
 
 #pragma warning disable MVVMTK0045
 public partial class ResourceUrl : ObservableObject

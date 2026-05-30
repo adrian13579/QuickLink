@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace ResourceFinder.Services;
+namespace QuickLink.Services;
 
 public sealed class TrayIconService : IDisposable
 {
@@ -164,7 +164,7 @@ public sealed class TrayIconService : IDisposable
         var nid = MakeNid(NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_SHOWTIP);
         nid.uCallbackMessage = WM_TRAYICON;
         nid.hIcon            = _hIcon;
-        nid.szTip            = "ResourceFinder";
+        nid.szTip            = "QuickLink";
         Shell_NotifyIcon(NIM_ADD, ref nid);
 
         var ver = MakeNid(0);
@@ -218,7 +218,7 @@ public sealed class TrayIconService : IDisposable
     private void ShowContextMenu()
     {
         var menu = CreatePopupMenu();
-        AppendMenu(menu, MF_STRING,    (nuint)MENU_SHOW, "Show ResourceFinder");
+        AppendMenu(menu, MF_STRING,    (nuint)MENU_SHOW, "Show QuickLink");
         AppendMenu(menu, MF_SEPARATOR, 0,                null);
         AppendMenu(menu, MF_STRING,    (nuint)MENU_EXIT, "Exit");
 

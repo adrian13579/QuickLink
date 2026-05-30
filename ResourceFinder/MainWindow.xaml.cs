@@ -1,14 +1,14 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using ResourceFinder.Pages;
-using ResourceFinder.Services;
+using QuickLink.Pages;
+using QuickLink.Services;
 using Windows.Graphics;
 
-namespace ResourceFinder;
+namespace QuickLink;
 
 public sealed partial class MainWindow : Window
 {

@@ -1,6 +1,6 @@
-using ResourceFinder.Models;
+﻿using QuickLink.Models;
 
-namespace ResourceFinder.Services;
+namespace QuickLink.Services;
 
 public interface IResourceRepository
 {

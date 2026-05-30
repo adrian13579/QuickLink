@@ -1,10 +1,10 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ResourceFinder.Models;
-using ResourceFinder.Services;
+using QuickLink.Models;
+using QuickLink.Services;
 
-namespace ResourceFinder.ViewModels;
+namespace QuickLink.ViewModels;
 
 #pragma warning disable MVVMTK0045
 public partial class ManageViewModel : ObservableObject

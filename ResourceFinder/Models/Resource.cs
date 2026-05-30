@@ -1,8 +1,8 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ResourceFinder.Models;
+namespace QuickLink.Models;
 
 #pragma warning disable MVVMTK0045
 public partial class Resource : ObservableObject

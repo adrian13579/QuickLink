@@ -1,7 +1,7 @@
-#Requires -RunAsAdministrator
+﻿#Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-    Builds and installs Resource Finder on this machine.
+    Builds and installs QuickLink on this machine.
 .PARAMETER Platform
     Target CPU architecture: x64 (default), x86, or ARM64.
 .PARAMETER Configuration
@@ -28,7 +28,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot   = $PSScriptRoot
-$projectFile = "$repoRoot\ResourceFinder\ResourceFinder.csproj"
+$projectFile = "$repoRoot\ResourceFinder\QuickLink.csproj"
 $certSubject = 'CN=AppPublisher'
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ if (-not $cert) {
         -Type           CodeSigningCert `
         -KeyUsage       DigitalSignature `
         -KeyExportPolicy Exportable `
-        -FriendlyName   'Resource Finder Dev Cert' `
+        -FriendlyName   'QuickLink Dev Cert' `
         -NotAfter       (Get-Date).AddYears(10)
 }
 
@@ -111,4 +111,4 @@ Write-Host "`n[4/4] Installing..." -ForegroundColor Cyan
 
 Add-AppxPackage -Path $msix.FullName -ForceApplicationShutdown
 
-Write-Host "`nDone. 'Resource Finder' is installed — find it in Start or Windows Search." -ForegroundColor Green
+Write-Host "`nDone. 'QuickLink' is installed — find it in Start or Windows Search." -ForegroundColor Green

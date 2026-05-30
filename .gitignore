@@ -1,0 +1,5 @@
+# Claude Code project config (machine-local)
+.claude/
+
+# Stray test data
+sample-data/resources-large.json

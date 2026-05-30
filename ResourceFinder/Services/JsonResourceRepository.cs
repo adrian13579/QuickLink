@@ -1,8 +1,8 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text.Json;
-using ResourceFinder.Models;
+using QuickLink.Models;
 
-namespace ResourceFinder.Services;
+namespace QuickLink.Services;
 
 public class JsonResourceRepository : IResourceRepository
 {

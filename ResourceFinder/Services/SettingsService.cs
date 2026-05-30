@@ -1,13 +1,13 @@
-using System.Text.Json;
-using ResourceFinder.Models;
+﻿using System.Text.Json;
+using QuickLink.Models;
 
-namespace ResourceFinder.Services;
+namespace QuickLink.Services;
 
 public class SettingsService
 {
     private static readonly string _folder = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "ResourceFinder");
+        "QuickLink");
     private static readonly string _settingsPath = Path.Combine(_folder, "settings.json");
     private static readonly string _defaultDataPath = Path.Combine(_folder, "resources.json");
 

@@ -1,9 +1,9 @@
-{
+﻿{
   "profiles": {
-    "ResourceFinder (Package)": {
+    "QuickLink (Package)": {
       "commandName": "MsixPackage"
     },
-    "ResourceFinder (Unpackaged)": {
+    "QuickLink (Unpackaged)": {
       "commandName": "Project"
     }
   }

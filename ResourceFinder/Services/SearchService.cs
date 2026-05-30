@@ -1,7 +1,7 @@
-using System.Buffers;
-using ResourceFinder.Models;
+﻿using System.Buffers;
+using QuickLink.Models;
 
-namespace ResourceFinder.Services;
+namespace QuickLink.Services;
 
 public class SearchService(IResourceRepository repo)
 {

@@ -1,8 +1,8 @@
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using System.Numerics;
 
-namespace ResourceFinder.Helpers;
+namespace QuickLink.Helpers;
 
 internal static class NotificationHelper
 {

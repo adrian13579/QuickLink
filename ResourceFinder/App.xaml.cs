@@ -1,11 +1,11 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using ResourceFinder.Models;
-using ResourceFinder.Services;
-using ResourceFinder.ViewModels;
+using QuickLink.Models;
+using QuickLink.Services;
+using QuickLink.ViewModels;
 
-namespace ResourceFinder;
+namespace QuickLink;
 
 public partial class App : Application
 {
@@ -16,8 +16,8 @@ public partial class App : Application
 
     private static Mutex?           _mutex;
     private static EventWaitHandle? _showEvent;
-    private const string MutexName = "ResourceFinder_SingleInstance";
-    private const string EventName = "ResourceFinder_ShowEvent";
+    private const string MutexName = "QuickLink_SingleInstance";
+    private const string EventName = "QuickLink_ShowEvent";
 
     public App()
     {
