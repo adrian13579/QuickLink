@@ -1,0 +1,248 @@
+[
+  {
+    "id": "a1b2c3d4-0001-0000-0000-000000000001",
+    "name": "Identity Server",
+    "description": "Central OAuth2/OIDC authority for all internal services",
+    "tags": ["auth", "oauth", "sso", "security"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0001-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0001-0000-0000-000000000010",
+        "url": "https://auth-v1.internal.example.com",
+        "label": "Original cluster",
+        "addedAt": "2024-01-15T08:00:00Z",
+        "addedBy": "sysadmin",
+        "isCurrent": false,
+        "isDeprecated": true
+      },
+      {
+        "id": "a1b2c3d4-0001-0000-0000-000000000002",
+        "url": "https://auth.internal.example.com",
+        "label": "Migrated to new cluster",
+        "addedAt": "2025-03-10T09:00:00Z",
+        "addedBy": "adrianportales",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0002-0000-0000-000000000001",
+    "name": "Grafana",
+    "description": "Dashboards and observability for all production services",
+    "tags": ["monitoring", "dashboards", "metrics", "observability"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0002-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0002-0000-0000-000000000002",
+        "url": "https://grafana.internal.example.com",
+        "label": "Production Grafana",
+        "addedAt": "2024-06-01T10:00:00Z",
+        "addedBy": "ops-team",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0003-0000-0000-000000000001",
+    "name": "Jenkins CI",
+    "description": "Build and deployment pipelines for backend services",
+    "tags": ["ci", "cd", "build", "pipelines", "devops"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0003-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0003-0000-0000-000000000002",
+        "url": "https://jenkins.internal.example.com",
+        "label": "Main Jenkins instance",
+        "addedAt": "2023-11-20T14:30:00Z",
+        "addedBy": "devops",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0004-0000-0000-000000000001",
+    "name": "Confluence",
+    "description": "Internal wiki and documentation hub",
+    "tags": ["docs", "wiki", "documentation", "knowledge"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0004-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0004-0000-0000-000000000002",
+        "url": "https://confluence.internal.example.com",
+        "label": "Company Confluence",
+        "addedAt": "2023-01-05T09:00:00Z",
+        "addedBy": "it-admin",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0005-0000-0000-000000000001",
+    "name": "User API",
+    "description": "REST API for user account management and profile data",
+    "tags": ["api", "users", "backend", "rest"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0005-0000-0000-000000000003",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0005-0000-0000-000000000010",
+        "url": "https://users-api-v1.internal.example.com/swagger",
+        "label": "v1 Swagger (deprecated)",
+        "addedAt": "2024-02-01T00:00:00Z",
+        "addedBy": "backend-team",
+        "isCurrent": false,
+        "isDeprecated": true
+      },
+      {
+        "id": "a1b2c3d4-0005-0000-0000-000000000003",
+        "url": "https://users-api.internal.example.com/swagger",
+        "label": "v2 Swagger UI",
+        "addedAt": "2025-01-15T00:00:00Z",
+        "addedBy": "adrianportales",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0006-0000-0000-000000000001",
+    "name": "Kibana Logs",
+    "description": "Centralized log search and analysis (ELK stack)",
+    "tags": ["logs", "elk", "search", "observability", "monitoring"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0006-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0006-0000-0000-000000000002",
+        "url": "https://kibana.internal.example.com",
+        "label": "Prod Kibana",
+        "addedAt": "2024-04-10T11:00:00Z",
+        "addedBy": "ops-team",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0007-0000-0000-000000000001",
+    "name": "Jira",
+    "description": "Project and issue tracking for all engineering teams",
+    "tags": ["jira", "tickets", "project-management", "issues"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0007-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0007-0000-0000-000000000002",
+        "url": "https://jira.internal.example.com",
+        "label": "Company Jira",
+        "addedAt": "2022-09-01T08:00:00Z",
+        "addedBy": "it-admin",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0008-0000-0000-000000000001",
+    "name": "Database Admin (pgAdmin)",
+    "description": "Web UI for PostgreSQL database administration",
+    "tags": ["database", "postgres", "sql", "admin", "db"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0008-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0008-0000-0000-000000000002",
+        "url": "https://pgadmin.internal.example.com",
+        "label": "pgAdmin 4",
+        "addedAt": "2024-08-20T13:00:00Z",
+        "addedBy": "dba-team",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0009-0000-0000-000000000001",
+    "name": "Vault (Secrets Manager)",
+    "description": "HashiCorp Vault for secrets and credentials management",
+    "tags": ["secrets", "vault", "security", "credentials", "infra"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0009-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0009-0000-0000-000000000002",
+        "url": "https://vault.internal.example.com",
+        "label": "Vault UI",
+        "addedAt": "2025-02-01T10:00:00Z",
+        "addedBy": "security-team",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0010-0000-0000-000000000001",
+    "name": "Old Status Page",
+    "description": "Legacy service status dashboard (replaced by Statuspage.io)",
+    "tags": ["status", "uptime", "legacy"],
+    "isDeprecated": true,
+    "currentUrlId": null,
+    "urls": [
+      {
+        "id": "a1b2c3d4-0010-0000-0000-000000000002",
+        "url": "https://status-old.internal.example.com",
+        "label": "Legacy status page",
+        "addedAt": "2022-01-01T00:00:00Z",
+        "addedBy": "ops-team",
+        "isCurrent": false,
+        "isDeprecated": true
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0011-0000-0000-000000000001",
+    "name": "Kubernetes Dashboard",
+    "description": "Web UI for cluster workload and pod management",
+    "tags": ["k8s", "kubernetes", "infra", "devops", "containers"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0011-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0011-0000-0000-000000000002",
+        "url": "https://k8s.internal.example.com",
+        "label": "Prod cluster dashboard",
+        "addedAt": "2025-04-05T09:00:00Z",
+        "addedBy": "infra-team",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-0012-0000-0000-000000000001",
+    "name": "Notification API",
+    "description": "Internal service for email, SMS, and push notifications",
+    "tags": ["api", "notifications", "email", "sms", "backend"],
+    "isDeprecated": false,
+    "currentUrlId": "a1b2c3d4-0012-0000-0000-000000000002",
+    "urls": [
+      {
+        "id": "a1b2c3d4-0012-0000-0000-000000000002",
+        "url": "https://notify-api.internal.example.com/swagger",
+        "label": "Notification API Swagger",
+        "addedAt": "2025-05-01T08:00:00Z",
+        "addedBy": "adrianportales",
+        "isCurrent": true,
+        "isDeprecated": false
+      }
+    ]
+  }
+]

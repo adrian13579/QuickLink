@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ResourceFinder (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ResourceFinder (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

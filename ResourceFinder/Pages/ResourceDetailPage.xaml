@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ResourceFinder.Pages.ResourceDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:ResourceFinder.Pages"
+    xmlns:models="using:ResourceFinder.Models"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid>
+        <ScrollViewer>
+            <StackPanel
+                MaxWidth="720"
+                Margin="24,16,24,32"
+                Spacing="16"
+                Visibility="{x:Bind local:ResourceDetailPage.ToVis(ViewModel.HasSelection), Mode=OneWay}">
+
+                <!-- Header row -->
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Click="Back_Click"
+                        ToolTipService.ToolTip="Back"
+                        CornerRadius="8"
+                        Width="36"
+                        Height="36"
+                        Padding="0"
+                        VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE72B;" FontSize="14" />
+                    </Button>
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="Resource Details"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Basic info card -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                    <StackPanel Spacing="14">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Name" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
+                            <TextBox Text="{x:Bind ViewModel.EditName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CornerRadius="6" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Description" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
+                            <TextBox
+                                Text="{x:Bind ViewModel.EditDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                AcceptsReturn="True"
+                                Height="76"
+                                TextWrapping="Wrap"
+                                CornerRadius="6" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Tags (comma-separated)" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
+                            <TextBox Text="{x:Bind ViewModel.EditTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CornerRadius="6" />
+                        </StackPanel>
+
+                        <ToggleSwitch Header="Deprecated" IsOn="{x:Bind ViewModel.EditIsDeprecated, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- URL History card -->
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE71B;" FontSize="14" Opacity="0.7" VerticalAlignment="Center" />
+                        <TextBlock Text="URL History" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    </StackPanel>
+
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="NewUrlBox" PlaceholderText="https://..." CornerRadius="6" />
+                        <Button
+                            Grid.Column="1"
+                            Style="{StaticResource AccentButtonStyle}"
+                            CornerRadius="6"
+                            Click="AddUrl_Click">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE710;" FontSize="12" />
+                                <TextBlock Text="Add URL" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedResource.Urls, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:ResourceUrl">
+                                <Border
+                                    Margin="0,0,0,6"
+                                    Padding="12,10"
+                                    CornerRadius="8"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1">
+                                    <Grid ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Spacing="4">
+                                            <TextBlock
+                                                Text="{x:Bind Url, Mode=OneWay}"
+                                                TextTrimming="CharacterEllipsis"
+                                                FontFamily="Consolas"
+                                                FontSize="13" />
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock
+                                                    Text="{x:Bind local:ResourceDetailPage.FormatDate(AddedAt)}"
+                                                    FontSize="11"
+                                                    Opacity="0.55"
+                                                    VerticalAlignment="Center" />
+                                                <Border
+                                                    Visibility="{x:Bind local:ResourceDetailPage.CurrentVis(IsCurrent), Mode=OneWay}"
+                                                    Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                                    BorderBrush="{ThemeResource SystemFillColorSuccessBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="10"
+                                                    Padding="7,1">
+                                                    <TextBlock Text="Current" FontSize="10" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                                                </Border>
+                                                <Border
+                                                    Visibility="{x:Bind local:ResourceDetailPage.DeprecatedVis(IsDeprecated), Mode=OneWay}"
+                                                    Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                                    BorderBrush="{ThemeResource SystemFillColorCautionBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="10"
+                                                    Padding="7,1">
+                                                    <TextBlock Text="Deprecated" FontSize="10" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                            <Button
+                                                ToolTipService.ToolTip="Copy URL"
+                                                Click="CopyUrl_Click"
+                                                Tag="{x:Bind Url, Mode=OneWay}"
+                                                Style="{StaticResource AccentButtonStyle}"
+                                                Width="32"
+                                                Height="32"
+                                                Padding="0"
+                                                CornerRadius="6">
+                                                <SymbolIcon Symbol="Copy" />
+                                            </Button>
+                                            <Button
+                                                ToolTipService.ToolTip="Set as current"
+                                                Tag="{x:Bind}"
+                                                Click="SetCurrent_Click"
+                                                Width="32"
+                                                Height="32"
+                                                Padding="0"
+                                                CornerRadius="6"
+                                                Visibility="{x:Bind local:ResourceDetailPage.NotCurrentVis(IsCurrent), Mode=OneWay}">
+                                                <FontIcon Glyph="&#xE8FB;" FontSize="14" />
+                                            </Button>
+                                            <Button
+                                                ToolTipService.ToolTip="Mark deprecated"
+                                                Tag="{x:Bind}"
+                                                Click="DeprecateUrl_Click"
+                                                Width="32"
+                                                Height="32"
+                                                Padding="0"
+                                                CornerRadius="6"
+                                                Visibility="{x:Bind local:ResourceDetailPage.NotDeprecatedVis(IsDeprecated), Mode=OneWay}">
+                                                <FontIcon Glyph="&#xE7BA;" FontSize="14" />
+                                            </Button>
+                                            <Button
+                                                ToolTipService.ToolTip="Remove"
+                                                Tag="{x:Bind}"
+                                                Click="DeleteUrl_Click"
+                                                Width="32"
+                                                Height="32"
+                                                Padding="0"
+                                                CornerRadius="6">
+                                                <FontIcon Glyph="&#xE74D;" FontSize="14" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- Action buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                    <Button
+                        Style="{StaticResource AccentButtonStyle}"
+                        CornerRadius="6"
+                        Click="Save_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE74E;" FontSize="13" />
+                            <TextBlock Text="Save" />
+                        </StackPanel>
+                    </Button>
+                    <Button
+                        CornerRadius="6"
+                        Click="Delete_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE74D;" FontSize="13" />
+                            <TextBlock Text="Delete Resource" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Floating notification -->
+        <InfoBar
+            x:Name="StatusBar"
+            IsOpen="False"
+            IsClosable="True"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Center"
+            MaxWidth="480"
+            Margin="0,0,0,24" />
+    </Grid>
+</Page>
