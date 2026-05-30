@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:ResourceFinder"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="ResourceFinder"
+    Title="Resource Finder"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
@@ -20,7 +20,7 @@
 
         <TitleBar
             x:Name="AppTitleBar"
-            Title="ResourceFinder"
+            Title="Resource Finder"
             IsBackButtonVisible="False"
             IsPaneToggleButtonVisible="False">
             <TitleBar.IconSource>
@@ -28,6 +28,12 @@
             </TitleBar.IconSource>
         </TitleBar>
 
-        <Frame x:Name="NavFrame" Grid.Row="1" />
+        <Frame x:Name="NavFrame" Grid.Row="1">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition />
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
     </Grid>
 </Window>

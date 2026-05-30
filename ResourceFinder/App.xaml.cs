@@ -14,16 +14,51 @@ public partial class App : Application
     private static MainWindow? _mainWindow;
     public static Window? MainWindow => _mainWindow;
 
+    private static Mutex?           _mutex;
+    private static EventWaitHandle? _showEvent;
+    private const string MutexName = "ResourceFinder_SingleInstance";
+    private const string EventName = "ResourceFinder_ShowEvent";
+
     public App()
     {
+        // Single-instance guard — must run before InitializeComponent
+        _mutex = new Mutex(initiallyOwned: true, MutexName, out bool isFirst);
+        if (!isFirst)
+        {
+            // Signal the running instance to show itself, then exit immediately
+            if (EventWaitHandle.TryOpenExisting(EventName, out var ev))
+            {
+                ev.Set();
+                ev.Dispose();
+            }
+            Environment.Exit(0);
+            return;
+        }
+
+        // First instance: listen for signals from future launches
+        _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, EventName);
+        new Thread(MonitorActivation) { IsBackground = true, Name = "ShowEventMonitor" }.Start();
+
         InitializeComponent();
         Services = BuildServices();
+    }
+
+    private static void MonitorActivation()
+    {
+        try
+        {
+            while (_showEvent?.WaitOne() == true)
+                _mainWindow?.DispatcherQueue.TryEnqueue(_mainWindow.ShowApp);
+        }
+        catch (ObjectDisposedException) { }
     }
 
     private static IServiceProvider BuildServices()
     {
         var sc = new ServiceCollection();
         sc.AddSingleton<SettingsService>();
+        sc.AddSingleton<HotkeyService>();
+        sc.AddSingleton<TrayIconService>();
         sc.AddSingleton<IResourceRepository, JsonResourceRepository>();
         sc.AddSingleton<SearchService>();
         sc.AddTransient<SearchViewModel>();
@@ -62,8 +97,7 @@ public partial class App : Application
             var resources = JsonSerializer.Deserialize<List<Resource>>(json, _caseInsensitive);
             if (resources == null) return;
 
-            foreach (var r in resources)
-                await repo.SaveAsync(r);
+            await repo.SaveRangeAsync(resources);
         }
         catch { /* non-critical — app works without seed data */ }
     }
