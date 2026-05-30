@@ -98,8 +98,20 @@ public sealed partial class SearchPage : Page
             ActivateResult(result);
     }
 
-    private void ActivateResult(SearchResult result) =>
-        App.NavigateToManageResource(result.Resource.Id);
+    private void ActivateResult(SearchResult result)
+    {
+        if (string.IsNullOrEmpty(result.CurrentUrl)) return;
+        var data = new DataPackage();
+        data.SetText(result.CurrentUrl);
+        Clipboard.SetContent(data);
+        ShowNotification("URL copied to clipboard.", InfoBarSeverity.Success);
+    }
+
+    private void ViewDetails_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.CommandParameter is SearchResult result)
+            App.NavigateToManageResource(result.Resource.Id);
+    }
 
     private void Settings_Click(object sender, RoutedEventArgs e) =>
         App.NavigateToSettings();
@@ -130,5 +142,12 @@ public sealed partial class SearchPage : Page
     {
         if (sender is Button btn && btn.CommandParameter is SearchResult result && !string.IsNullOrEmpty(result.CurrentUrl))
             _ = Launcher.LaunchUriAsync(new Uri(result.CurrentUrl));
+    }
+
+    private void OpenInBrowser_Accelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (ResultsList.SelectedItem is SearchResult result && !string.IsNullOrEmpty(result.CurrentUrl))
+            _ = Launcher.LaunchUriAsync(new Uri(result.CurrentUrl));
+        args.Handled = true;
     }
 }

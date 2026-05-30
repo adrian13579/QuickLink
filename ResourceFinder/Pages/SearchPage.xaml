@@ -85,6 +85,9 @@
             IsItemClickEnabled="True"
             ItemClick="ResultsList_ItemClick"
             KeyDown="ResultsList_KeyDown">
+            <ListView.KeyboardAccelerators>
+                <KeyboardAccelerator Modifiers="Control" Key="Enter" Invoked="OpenInBrowser_Accelerator" />
+            </ListView.KeyboardAccelerators>
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
                     <AddDeleteThemeTransition />
@@ -194,6 +197,16 @@
                                     CommandParameter="{x:Bind}">
                                     <FontIcon Glyph="&#xE8A7;" FontSize="14" />
                                 </Button>
+                                <Button
+                                    Width="32"
+                                    Height="32"
+                                    Padding="0"
+                                    CornerRadius="6"
+                                    ToolTipService.ToolTip="Edit / View details"
+                                    Click="ViewDetails_Click"
+                                    CommandParameter="{x:Bind}">
+                                    <SymbolIcon Symbol="Edit" />
+                                </Button>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -264,11 +277,22 @@
                         Padding="6,2">
                         <TextBlock Text="Enter" FontSize="10" Opacity="0.65" />
                     </Border>
-                    <TextBlock Text="Edit" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
+                    <TextBlock Text="Copy URL" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="6,2">
+                        <TextBlock Text="Ctrl+Enter" FontSize="10" Opacity="0.65" />
+                    </Border>
+                    <TextBlock Text="Open in browser" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
             <TextBlock
-                Text="Click a result to edit"
+                Text="Click a result to copy URL"
                 Opacity="0.35"
                 FontSize="11"
                 VerticalAlignment="Center"
