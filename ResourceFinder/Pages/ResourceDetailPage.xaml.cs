@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using ResourceFinder.Models;
 using ResourceFinder.ViewModels;
@@ -34,6 +35,7 @@ public sealed partial class ResourceDetailPage : Page
             await ViewModel.LoadSingleAsync(existingId);
 
         Bindings.Update();
+        DispatcherQueue.TryEnqueue(() => NameBox.Focus(FocusState.Programmatic));
     }
 
     public async Task<bool> ConfirmDiscardAsync()
@@ -50,7 +52,22 @@ public sealed partial class ResourceDetailPage : Page
         return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 
-    private async void Back_Click(object sender, RoutedEventArgs e)
+    private async void Escape_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        args.Handled = true;
+        await GoBackAsync();
+    }
+
+    private async void Backspace_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (FocusManager.GetFocusedElement(XamlRoot) is TextBox or PasswordBox or RichEditBox or NumberBox) return;
+        args.Handled = true;
+        await GoBackAsync();
+    }
+
+    private async void Back_Click(object sender, RoutedEventArgs e) => await GoBackAsync();
+
+    private async Task GoBackAsync()
     {
         if (ViewModel.IsDirty)
         {
@@ -62,10 +79,16 @@ public sealed partial class ResourceDetailPage : Page
 
     private async void Save_Click(object sender, RoutedEventArgs e)
     {
+        if (string.IsNullOrWhiteSpace(ViewModel.EditName))
+        {
+            ShowNotification("Name is required.", InfoBarSeverity.Error);
+            return;
+        }
+
         try
         {
             await ViewModel.SaveCommand.ExecuteAsync(null);
-            App.NavigateToSearch();
+            ShowNotification("Resource saved.");
         }
         catch (Exception ex)
         {
@@ -186,23 +209,12 @@ public sealed partial class ResourceDetailPage : Page
         }
     }
 
-    private async void ShowNotification(string message, InfoBarSeverity severity = InfoBarSeverity.Success)
+    private void ShowNotification(string message, InfoBarSeverity severity = InfoBarSeverity.Success)
     {
         _notifyCts?.Cancel();
         _notifyCts?.Dispose();
         _notifyCts = new CancellationTokenSource();
-        var token = _notifyCts.Token;
-
-        StatusBar.Message = message;
-        StatusBar.Severity = severity;
-        StatusBar.IsOpen = true;
-
-        try
-        {
-            await Task.Delay(3000, token);
-            StatusBar.IsOpen = false;
-        }
-        catch (OperationCanceledException) { }
+        _ = Helpers.NotificationHelper.ShowAsync(StatusBar, message, severity, _notifyCts.Token);
     }
 
     public static Visibility ToVis(bool value) => value ? Visibility.Visible : Visibility.Collapsed;

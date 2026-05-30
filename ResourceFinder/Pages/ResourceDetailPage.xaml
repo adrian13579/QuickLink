@@ -10,11 +10,15 @@
     mc:Ignorable="d"
     Background="Transparent">
 
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Escape" Invoked="Escape_Invoked" />
+        <KeyboardAccelerator Key="Back" Invoked="Backspace_Invoked" />
+    </Page.KeyboardAccelerators>
+
     <Grid>
         <ScrollViewer>
             <StackPanel
-                MaxWidth="720"
-                Margin="24,16,24,32"
+                Margin="24,20,24,32"
                 Spacing="16"
                 Visibility="{x:Bind local:ResourceDetailPage.ToVis(ViewModel.HasSelection), Mode=OneWay}">
 
@@ -37,7 +41,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Text="Resource Details"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Style="{StaticResource TitleTextBlockStyle}"
                         VerticalAlignment="Center" />
                 </Grid>
 
@@ -50,8 +54,11 @@
                     Padding="16">
                     <StackPanel Spacing="14">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="Name" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
-                            <TextBox Text="{x:Bind ViewModel.EditName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CornerRadius="6" />
+                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7">
+                                <Run Text="Name" />
+                                <Run Text=" *" Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                            </TextBlock>
+                            <TextBox x:Name="NameBox" Text="{x:Bind ViewModel.EditName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CornerRadius="6" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
