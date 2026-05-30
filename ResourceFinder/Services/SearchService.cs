@@ -1,50 +1,83 @@
+using System.Buffers;
 using ResourceFinder.Models;
 
 namespace ResourceFinder.Services;
 
 public class SearchService(IResourceRepository repo)
 {
+    private sealed record SearchEntry(
+        Resource Resource,
+        string NameLower,
+        string DescLower,
+        string[] TagsLower,
+        string UrlLower);
+
+    private SearchEntry[] _index = [];
+    private long _indexVersion = -1;
+
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(string query)
     {
-        var all = await repo.GetAllAsync();
+        var index = await GetIndexAsync();
 
         if (string.IsNullOrWhiteSpace(query))
         {
-            return all
-                .OrderBy(r => r.IsDeprecated)
-                .ThenBy(r => r.Name)
-                .Select(r => ToResult(r, 1.0))
+            return index
+                .OrderBy(e => e.Resource.IsDeprecated)
+                .ThenBy(e => e.Resource.Name)
+                .Select(e => ToResult(e, 1.0))
                 .Take(50)
                 .ToList();
         }
 
         var q = query.Trim().ToLowerInvariant();
-        return all
-            .Select(r => (resource: r, score: ScoreResource(r, q)))
+        return index
+            .Select(e => (entry: e, score: ScoreEntry(e, q)))
             .Where(x => x.score > 0)
             .OrderByDescending(x => x.score)
-            .ThenBy(x => x.resource.IsDeprecated)
+            .ThenBy(x => x.entry.Resource.IsDeprecated)
             .Take(50)
-            .Select(x => ToResult(x.resource, x.score))
+            .Select(x => ToResult(x.entry, x.score))
             .ToList();
     }
 
-    private static SearchResult ToResult(Resource r, double score) => new()
+    private async Task<SearchEntry[]> GetIndexAsync()
     {
-        Resource = r,
+        var version = repo.Version;
+        if (version == _indexVersion) return _index;
+
+        var all = await repo.GetAllAsync();
+        _index = [.. all.Select(BuildEntry)];
+        _indexVersion = version;
+        return _index;
+    }
+
+    private static SearchEntry BuildEntry(Resource r) => new(
+        r,
+        r.Name.ToLowerInvariant(),
+        r.Description.ToLowerInvariant(),
+        [.. r.Tags.Select(t => t.ToLowerInvariant())],
+        (r.CurrentUrl?.Url ?? r.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url ?? string.Empty).ToLowerInvariant());
+
+    private static SearchResult ToResult(SearchEntry e, double score) => new()
+    {
+        Resource = e.Resource,
         Score = score,
-        CurrentUrl = r.CurrentUrl?.Url ?? r.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url ?? string.Empty
+        CurrentUrl = e.Resource.CurrentUrl?.Url
+            ?? e.Resource.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url
+            ?? string.Empty
     };
 
-    private static double ScoreResource(Resource r, string query)
+    private static double ScoreEntry(SearchEntry e, string query)
     {
-        double best = 0;
-        best = Math.Max(best, FuzzyScore(r.Name.ToLowerInvariant(), query));
-        best = Math.Max(best, FuzzyScore(r.Description.ToLowerInvariant(), query) * 0.85);
-        foreach (var tag in r.Tags)
-            best = Math.Max(best, FuzzyScore(tag.ToLowerInvariant(), query) * 0.9);
-        if (r.CurrentUrl != null)
-            best = Math.Max(best, FuzzyScore(r.CurrentUrl.Url.ToLowerInvariant(), query) * 0.7);
+        double best = FuzzyScore(e.NameLower, query);
+        if (best < 1.0) best = Math.Max(best, FuzzyScore(e.DescLower, query) * 0.85);
+        foreach (var tag in e.TagsLower)
+        {
+            if (best >= 1.0) break;
+            best = Math.Max(best, FuzzyScore(tag, query) * 0.9);
+        }
+        if (best < 1.0 && e.UrlLower.Length > 0)
+            best = Math.Max(best, FuzzyScore(e.UrlLower, query) * 0.7);
         return best;
     }
 
@@ -54,6 +87,8 @@ public class SearchService(IResourceRepository repo)
         if (text.StartsWith(query)) return 0.9;
         if (text.Contains(query)) return 0.75;
         if (IsSubsequence(query, text)) return 0.5;
+        // Skip Levenshtein when the length ratio makes a good score impossible
+        if (text.Length > query.Length * 3) return 0;
         var ratio = 1.0 - (double)LevenshteinDistance(text, query) / Math.Max(text.Length, query.Length);
         return ratio > 0.4 ? ratio * 0.4 : 0;
     }
@@ -70,14 +105,28 @@ public class SearchService(IResourceRepository repo)
     {
         if (a.Length == 0) return b.Length;
         if (b.Length == 0) return a.Length;
-        var d = new int[a.Length + 1, b.Length + 1];
-        for (int i = 0; i <= a.Length; i++) d[i, 0] = i;
-        for (int j = 0; j <= b.Length; j++) d[0, j] = j;
-        for (int i = 1; i <= a.Length; i++)
-            for (int j = 1; j <= b.Length; j++)
-                d[i, j] = a[i - 1] == b[j - 1]
-                    ? d[i - 1, j - 1]
-                    : 1 + Math.Min(d[i - 1, j - 1], Math.Min(d[i - 1, j], d[i, j - 1]));
-        return d[a.Length, b.Length];
+
+        var pool = ArrayPool<int>.Shared;
+        var prev = pool.Rent(b.Length + 1);
+        var curr = pool.Rent(b.Length + 1);
+        try
+        {
+            for (int j = 0; j <= b.Length; j++) prev[j] = j;
+            for (int i = 1; i <= a.Length; i++)
+            {
+                curr[0] = i;
+                for (int j = 1; j <= b.Length; j++)
+                    curr[j] = a[i - 1] == b[j - 1]
+                        ? prev[j - 1]
+                        : 1 + Math.Min(prev[j - 1], Math.Min(prev[j], curr[j - 1]));
+                (prev, curr) = (curr, prev);
+            }
+            return prev[b.Length];
+        }
+        finally
+        {
+            pool.Return(prev);
+            pool.Return(curr);
+        }
     }
 }

@@ -18,20 +18,30 @@ public sealed partial class SearchPage : Page
     {
         ViewModel = App.Services.GetRequiredService<SearchViewModel>();
         InitializeComponent();
-    }
-
-    public void ResetAndFocus()
-    {
-        ViewModel.SearchText = string.Empty;
-        _ = ViewModel.LoadResultsAsync(string.Empty);
-        SearchBox.Focus(FocusState.Programmatic);
+        Loaded += (_, _) => EnsureFocused();
     }
 
     protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         _ = ViewModel.LoadResultsAsync(ViewModel.SearchText);
-        SearchBox.Focus(FocusState.Programmatic);
+    }
+
+    public void FocusSearchBox() => EnsureFocused();
+
+    private void EnsureFocused()
+    {
+        if (SearchBox.Focus(FocusState.Programmatic)) return;
+
+        // Window not yet active (e.g. initial launch) — wait for activation then focus
+        if (App.MainWindow is not { } win) return;
+        void OnActivated(object s, WindowActivatedEventArgs a)
+        {
+            if (a.WindowActivationState == WindowActivationState.Deactivated) return;
+            win.Activated -= OnActivated;
+            DispatcherQueue.TryEnqueue(() => SearchBox.Focus(FocusState.Programmatic));
+        }
+        win.Activated += OnActivated;
     }
 
     public static Style? GetNameStyle(bool isDeprecated) =>
@@ -56,6 +66,11 @@ public sealed partial class SearchPage : Page
             ResultsList.SelectedIndex = 0;
             e.Handled = true;
         }
+        else if (e.Key == VirtualKey.Escape)
+        {
+            App.MainWindow?.AppWindow.Hide();
+            e.Handled = true;
+        }
     }
 
     private void ResultsList_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -68,6 +83,11 @@ public sealed partial class SearchPage : Page
         else if (e.Key == VirtualKey.Up && ResultsList.SelectedIndex == 0)
         {
             SearchBox.Focus(FocusState.Keyboard);
+            e.Handled = true;
+        }
+        else if (e.Key == VirtualKey.Escape)
+        {
+            App.MainWindow?.AppWindow.Hide();
             e.Handled = true;
         }
     }
@@ -98,23 +118,12 @@ public sealed partial class SearchPage : Page
         }
     }
 
-    private async void ShowNotification(string message, InfoBarSeverity severity = InfoBarSeverity.Success)
+    private void ShowNotification(string message, InfoBarSeverity severity = InfoBarSeverity.Success)
     {
         _notifyCts?.Cancel();
         _notifyCts?.Dispose();
         _notifyCts = new CancellationTokenSource();
-        var token = _notifyCts.Token;
-
-        StatusBar.Message = message;
-        StatusBar.Severity = severity;
-        StatusBar.IsOpen = true;
-
-        try
-        {
-            await Task.Delay(3000, token);
-            StatusBar.IsOpen = false;
-        }
-        catch (OperationCanceledException) { }
+        _ = Helpers.NotificationHelper.ShowAsync(StatusBar, message, severity, _notifyCts.Token);
     }
 
     private void OpenUrl_Click(object sender, RoutedEventArgs e)

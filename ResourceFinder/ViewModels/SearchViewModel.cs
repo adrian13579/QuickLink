@@ -10,6 +10,8 @@ public partial class SearchViewModel : ObservableObject
 {
     private readonly SearchService _search;
     private readonly SettingsService _settings;
+    private CancellationTokenSource? _cts;
+    private bool _searchPending;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -22,17 +24,49 @@ public partial class SearchViewModel : ObservableObject
         _settings = settings;
     }
 
-    partial void OnSearchTextChanged(string value) => _ = LoadResultsAsync(value);
-
-    public bool IsEmpty => Results.Count == 0;
-
-    public async Task LoadResultsAsync(string query)
+    partial void OnSearchTextChanged(string value)
     {
-        var results = await _search.SearchAsync(query);
-        Results.Clear();
-        foreach (var r in results)
-            Results.Add(r);
-        OnPropertyChanged(nameof(IsEmpty));
+        OnPropertyChanged(nameof(HasQuery));
+        OnPropertyChanged(nameof(ShowIdle));
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            _searchPending = true;
+            OnPropertyChanged(nameof(ShowNoResults));
+        }
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+        _ = LoadResultsAsync(value, _cts.Token);
+    }
+
+    public bool HasQuery => !string.IsNullOrWhiteSpace(SearchText);
+    public bool ShowIdle => !HasQuery;
+    public bool IsEmpty => Results.Count == 0;
+    public bool ShowNoResults => HasQuery && IsEmpty && !_searchPending;
+
+    public async Task LoadResultsAsync(string query, CancellationToken ct = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                _searchPending = false;
+                Results.Clear();
+                OnPropertyChanged(nameof(IsEmpty));
+                OnPropertyChanged(nameof(ShowNoResults));
+                return;
+            }
+            await Task.Delay(150, ct);
+            var results = await _search.SearchAsync(query);
+            ct.ThrowIfCancellationRequested();
+            _searchPending = false;
+            Results.Clear();
+            foreach (var r in results)
+                Results.Add(r);
+            OnPropertyChanged(nameof(IsEmpty));
+            OnPropertyChanged(nameof(ShowNoResults));
+        }
+        catch (OperationCanceledException) { }
     }
 
     public bool OpenInBrowser => _settings.Current.DefaultAction == "OpenInBrowser";

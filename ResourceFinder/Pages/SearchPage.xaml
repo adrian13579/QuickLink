@@ -31,33 +31,46 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox
-                x:Name="SearchBox"
-                PlaceholderText="Search resources..."
-                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                FontSize="16"
-                Height="44"
-                VerticalContentAlignment="Center"
-                CornerRadius="10"
-                KeyDown="SearchBox_KeyDown" />
+
+            <!-- Input with embedded search icon -->
+            <Grid>
+                <TextBox
+                    x:Name="SearchBox"
+                    PlaceholderText="Search resources..."
+                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    FontSize="14"
+                    Height="40"
+                    Padding="46,9,14,9"
+                    CornerRadius="20"
+                    KeyDown="SearchBox_KeyDown" />
+                <FontIcon
+                    Glyph="&#xE721;"
+                    FontSize="14"
+                    Opacity="0.5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="17,0,0,0"
+                    IsHitTestVisible="False" />
+            </Grid>
+
             <Button
                 Grid.Column="1"
-                Height="44"
-                Width="44"
+                Height="40"
+                Width="40"
                 ToolTipService.ToolTip="Settings"
                 Click="Settings_Click"
-                CornerRadius="10">
-                <FontIcon Glyph="&#xE713;" FontSize="16" />
+                CornerRadius="20">
+                <FontIcon Glyph="&#xE713;" FontSize="15" />
             </Button>
             <Button
                 Grid.Column="2"
-                Height="44"
-                Width="44"
+                Height="40"
+                Width="40"
                 ToolTipService.ToolTip="Add Resource"
                 Click="AddResource_Click"
                 Style="{StaticResource AccentButtonStyle}"
-                CornerRadius="10">
-                <FontIcon Glyph="&#xE710;" FontSize="16" />
+                CornerRadius="20">
+                <FontIcon Glyph="&#xE710;" FontSize="15" />
             </Button>
         </Grid>
 
@@ -65,6 +78,7 @@
         <ListView
             x:Name="ResultsList"
             Grid.Row="1"
+            Visibility="{x:Bind local:SearchPage.BoolToVis(ViewModel.HasQuery), Mode=OneWay}"
             Margin="8,8,8,0"
             ItemsSource="{x:Bind ViewModel.Results}"
             SelectionMode="Single"
@@ -187,14 +201,14 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- Empty state -->
+        <!-- No results state (searched but nothing matched) -->
         <StackPanel
             Grid.Row="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Spacing="14"
             IsHitTestVisible="False"
-            Visibility="{x:Bind local:SearchPage.BoolToVis(ViewModel.IsEmpty), Mode=OneWay}">
+            Visibility="{x:Bind local:SearchPage.BoolToVis(ViewModel.ShowNoResults), Mode=OneWay}">
             <FontIcon
                 Glyph="&#xE721;"
                 FontSize="52"
@@ -204,6 +218,26 @@
                 Text="No resources found"
                 FontSize="14"
                 Opacity="0.4"
+                HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Idle state (empty input) -->
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Spacing="14"
+            IsHitTestVisible="False"
+            Visibility="{x:Bind local:SearchPage.BoolToVis(ViewModel.ShowIdle), Mode=OneWay}">
+            <FontIcon
+                Glyph="&#xE721;"
+                FontSize="52"
+                Opacity="0.12"
+                HorizontalAlignment="Center" />
+            <TextBlock
+                Text="Type to search resources"
+                FontSize="14"
+                Opacity="0.35"
                 HorizontalAlignment="Center" />
         </StackPanel>
 
