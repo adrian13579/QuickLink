@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,22 +12,37 @@ namespace ResourceFinder;
 
 public sealed partial class MainWindow : Window
 {
-    private const int MinWidth  = 700;
-    private const int MinHeight = 500;
+    private const int MinWidth      = 700;
+    private const int MinHeight     = 500;
+    private const int DragStripDips = 28;
 
     private bool _forceExit;
+
+    [DllImport("user32.dll")]
+    private static extern int GetDpiForWindow(IntPtr hwnd);
 
     public MainWindow()
     {
         InitializeComponent();
 
+        // Fill the full client area — no WinUI title-bar reservation
         ExtendsContentIntoTitleBar = true;
-        SetTitleBar(AppTitleBar);
-        AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+
+        // Remove OS caption buttons (X / min / max) while keeping the Win11
+        // rounded-corner border and drop shadow
+        var presenter = AppWindow.Presenter as OverlappedPresenter;
+        if (presenter != null)
+        {
+            presenter.IsMaximizable = false;
+            presenter.IsMinimizable = false;
+            presenter.SetBorderAndTitleBar(hasBorder: true, hasTitleBar: false);
+        }
+
         AppWindow.SetIcon("Assets/AppIcon.ico");
         var settings = App.Services.GetRequiredService<SettingsService>();
         AppWindow.Resize(new SizeInt32(settings.Current.WindowWidth, settings.Current.WindowHeight));
         CenterOnScreen();
+        UpdateDragRegion();
 
         AppWindow.Changed += (_, e) =>
         {
@@ -35,6 +52,7 @@ public sealed partial class MainWindow : Window
             int h = Math.Max(sz.Height, MinHeight);
             if (w != sz.Width || h != sz.Height)
                 AppWindow.Resize(new SizeInt32(w, h));
+            UpdateDragRegion();
         };
 
         // Hide to tray instead of closing, unless Exit was chosen from the tray menu
@@ -77,6 +95,17 @@ public sealed partial class MainWindow : Window
         AppWindow.Move(new PointInt32(
             area.X + (area.Width  - AppWindow.Size.Width)  / 2,
             area.Y + (area.Height - AppWindow.Size.Height) / 2));
+    }
+
+    private void UpdateDragRegion()
+    {
+        var hwnd  = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        double scale  = GetDpiForWindow(hwnd) / 96.0;
+        int dragPx = (int)Math.Round(DragStripDips * scale);
+        var source = InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
+        source.SetRegionRects(
+            NonClientRegionKind.Caption,
+            [new RectInt32(0, 0, AppWindow.Size.Width, dragPx)]);
     }
 
     internal void ApplySavedWindowSize()

@@ -9,24 +9,27 @@
     Title="Resource Finder"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
-        <MicaBackdrop />
+        <DesktopAcrylicBackdrop />
     </Window.SystemBackdrop>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
+            <RowDefinition Height="28" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TitleBar
-            x:Name="AppTitleBar"
-            Title="Resource Finder"
-            IsBackButtonVisible="False"
-            IsPaneToggleButtonVisible="False">
-            <TitleBar.IconSource>
-                <ImageIconSource ImageSource="Assets/AppIcon.ico" />
-            </TitleBar.IconSource>
-        </TitleBar>
+        <!-- Drag strip — hit-test disabled so InputNonClientPointerSource handles it -->
+        <Border Grid.Row="0" IsHitTestVisible="False">
+            <Rectangle
+                Width="32"
+                Height="4"
+                RadiusX="2"
+                RadiusY="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Fill="{ThemeResource DividerStrokeColorDefaultBrush}"
+                Opacity="0.45" />
+        </Border>
 
         <Frame x:Name="NavFrame" Grid.Row="1">
             <Frame.ContentTransitions>
