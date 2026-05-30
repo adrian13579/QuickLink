@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using ResourceFinder.Models;
@@ -168,16 +169,16 @@ public sealed partial class ResourceDetailPage : Page
 
     private async void DeprecateUrl_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is ResourceUrl urlEntry)
+        if (sender is ToggleButton btn && btn.Tag is ResourceUrl urlEntry)
         {
             try
             {
                 await ViewModel.DeprecateUrlCommand.ExecuteAsync(urlEntry);
-                ShowNotification("URL deprecated.", InfoBarSeverity.Informational);
+                ShowNotification(urlEntry.IsDeprecated ? "URL deprecated." : "URL restored.", InfoBarSeverity.Informational);
             }
             catch (Exception ex)
             {
-                ShowNotification($"Could not deprecate URL: {ex.Message}", InfoBarSeverity.Error);
+                ShowNotification($"Could not update URL: {ex.Message}", InfoBarSeverity.Error);
             }
         }
     }

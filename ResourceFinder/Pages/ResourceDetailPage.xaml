@@ -177,17 +177,17 @@
                                                 Visibility="{x:Bind local:ResourceDetailPage.NotCurrentVis(IsCurrent), Mode=OneWay}">
                                                 <FontIcon Glyph="&#xE8FB;" FontSize="14" />
                                             </Button>
-                                            <Button
-                                                ToolTipService.ToolTip="Mark deprecated"
+                                            <ToggleButton
+                                                ToolTipService.ToolTip="Toggle deprecated"
                                                 Tag="{x:Bind}"
                                                 Click="DeprecateUrl_Click"
+                                                IsChecked="{x:Bind IsDeprecated, Mode=OneWay}"
                                                 Width="32"
                                                 Height="32"
                                                 Padding="0"
-                                                CornerRadius="6"
-                                                Visibility="{x:Bind local:ResourceDetailPage.NotDeprecatedVis(IsDeprecated), Mode=OneWay}">
+                                                CornerRadius="6">
                                                 <FontIcon Glyph="&#xE7BA;" FontSize="14" />
-                                            </Button>
+                                            </ToggleButton>
                                             <Button
                                                 ToolTipService.ToolTip="Remove"
                                                 Tag="{x:Bind}"

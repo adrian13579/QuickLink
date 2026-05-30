@@ -175,8 +175,8 @@ public partial class ManageViewModel : ObservableObject
     public async Task DeprecateUrlAsync(ResourceUrl urlEntry)
     {
         if (SelectedResource == null) return;
-        urlEntry.IsDeprecated = true;
-        if (urlEntry.IsCurrent)
+        urlEntry.IsDeprecated = !urlEntry.IsDeprecated;
+        if (urlEntry.IsDeprecated && urlEntry.IsCurrent)
         {
             urlEntry.IsCurrent = false;
             SelectedResource.CurrentUrlId = null;
