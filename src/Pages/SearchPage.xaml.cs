@@ -123,11 +123,6 @@ public sealed partial class SearchPage : Page
                 e.Handled = true;
             }
         }
-        else if (e.Key == VirtualKey.Escape)
-        {
-            App.MainWindow?.AppWindow.Hide();
-            e.Handled = true;
-        }
     }
 
     private void ResultsList_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -140,11 +135,6 @@ public sealed partial class SearchPage : Page
         else if (e.Key == VirtualKey.Up && ResultsList.SelectedIndex == 0)
         {
             SearchBox.Focus(FocusState.Keyboard);
-            e.Handled = true;
-        }
-        else if (e.Key == VirtualKey.Escape)
-        {
-            App.MainWindow?.AppWindow.Hide();
             e.Handled = true;
         }
     }
@@ -171,11 +161,6 @@ public sealed partial class SearchPage : Page
         else if (e.Key == VirtualKey.Up && PinnedList.SelectedIndex == 0)
         {
             SearchBox.Focus(FocusState.Keyboard);
-            e.Handled = true;
-        }
-        else if (e.Key == VirtualKey.Escape)
-        {
-            App.MainWindow?.AppWindow.Hide();
             e.Handled = true;
         }
     }
@@ -244,6 +229,12 @@ public sealed partial class SearchPage : Page
         if (ResultsList.SelectedItem is SearchResult result)
             App.NavigateToManageResource(result.Resource.Id);
         args.Handled = true;
+    }
+
+    private void Escape_Accelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        args.Handled = true;
+        App.MainWindow?.AppWindow.Hide();
     }
 
     private async void PinResource_Accelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)

@@ -11,6 +11,7 @@
     Background="Transparent">
 
     <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Escape" Invoked="Escape_Accelerator" />
         <KeyboardAccelerator Modifiers="Control" Key="P" Invoked="PinResource_Accelerator" />
     </Page.KeyboardAccelerators>
 
