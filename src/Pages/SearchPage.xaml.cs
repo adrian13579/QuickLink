@@ -157,4 +157,11 @@ public sealed partial class SearchPage : Page
             _ = Launcher.LaunchUriAsync(new Uri(result.CurrentUrl));
         args.Handled = true;
     }
+
+    private void EditResource_Accelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (ResultsList.SelectedItem is SearchResult result)
+            App.NavigateToManageResource(result.Resource.Id);
+        args.Handled = true;
+    }
 }

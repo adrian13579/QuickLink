@@ -87,6 +87,7 @@
             KeyDown="ResultsList_KeyDown">
             <ListView.KeyboardAccelerators>
                 <KeyboardAccelerator Modifiers="Control" Key="Enter" Invoked="OpenInBrowser_Accelerator" />
+                <KeyboardAccelerator Modifiers="Control" Key="E" Invoked="EditResource_Accelerator" />
             </ListView.KeyboardAccelerators>
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
@@ -289,6 +290,17 @@
                         <TextBlock Text="Ctrl+Enter" FontSize="10" Opacity="0.65" />
                     </Border>
                     <TextBlock Text="Open in browser" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="6,2">
+                        <TextBlock Text="Ctrl+E" FontSize="10" Opacity="0.65" />
+                    </Border>
+                    <TextBlock Text="Edit" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                     <Border
