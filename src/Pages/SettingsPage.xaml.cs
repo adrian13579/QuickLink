@@ -22,16 +22,18 @@ public sealed partial class SettingsPage : Page
         DataFilePathBox.Text.Trim() != _settings.Current.DataFilePath ||
         (_pendingHotkey is not null && _pendingHotkey != _settings.Current.Hotkey) ||
         (int)WindowWidthBox.Value  != _settings.Current.WindowWidth  ||
-        (int)WindowHeightBox.Value != _settings.Current.WindowHeight;
+        (int)WindowHeightBox.Value != _settings.Current.WindowHeight ||
+        AlwaysOnTopToggle.IsOn     != _settings.Current.AlwaysOnTop;
 
     public SettingsPage()
     {
         _settings = App.Services.GetRequiredService<SettingsService>();
         InitializeComponent();
-        DataFilePathBox.Text  = _settings.Current.DataFilePath;
-        HotkeyBox.Text        = _settings.Current.Hotkey;
-        WindowWidthBox.Value  = _settings.Current.WindowWidth;
-        WindowHeightBox.Value = _settings.Current.WindowHeight;
+        DataFilePathBox.Text   = _settings.Current.DataFilePath;
+        HotkeyBox.Text         = _settings.Current.Hotkey;
+        WindowWidthBox.Value   = _settings.Current.WindowWidth;
+        WindowHeightBox.Value  = _settings.Current.WindowHeight;
+        AlwaysOnTopToggle.IsOn = _settings.Current.AlwaysOnTop;
         Loaded += OnLoaded;
     }
 
@@ -224,8 +226,12 @@ public sealed partial class SettingsPage : Page
         _settings.Current.WindowWidth  = newW;
         _settings.Current.WindowHeight = newH;
 
+        _settings.Current.AlwaysOnTop = AlwaysOnTopToggle.IsOn;
+
         _settings.Save();
-        (App.MainWindow as QuickLink.MainWindow)?.ApplySavedWindowSize();
+        var mainWindow = App.MainWindow as QuickLink.MainWindow;
+        mainWindow?.ApplySavedWindowSize();
+        mainWindow?.ApplyAlwaysOnTop();
         ShowNotification("Settings saved.");
     }
 

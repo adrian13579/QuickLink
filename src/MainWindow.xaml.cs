@@ -41,6 +41,8 @@ public sealed partial class MainWindow : Window
 
         AppWindow.SetIcon("Assets/AppIcon.ico");
         var settings = App.Services.GetRequiredService<SettingsService>();
+        if (presenter != null)
+            presenter.IsAlwaysOnTop = settings.Current.AlwaysOnTop;
         AppWindow.Resize(new SizeInt32(settings.Current.WindowWidth, settings.Current.WindowHeight));
         CenterOnScreen();
         UpdateDragRegion();
@@ -114,6 +116,12 @@ public sealed partial class MainWindow : Window
         var s = App.Services.GetRequiredService<SettingsService>();
         AppWindow.Resize(new SizeInt32(s.Current.WindowWidth, s.Current.WindowHeight));
         CenterOnScreen();
+    }
+
+    internal void ApplyAlwaysOnTop()
+    {
+        if (AppWindow.Presenter is OverlappedPresenter p)
+            p.IsAlwaysOnTop = App.Services.GetRequiredService<SettingsService>().Current.AlwaysOnTop;
     }
 
     internal void ShowApp()

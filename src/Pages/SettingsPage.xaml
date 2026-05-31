@@ -198,6 +198,49 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Always on Top card -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border
+                            Width="36"
+                            Height="36"
+                            CornerRadius="8"
+                            Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                            VerticalAlignment="Center">
+                            <FontIcon
+                                Glyph="&#xE8A7;"
+                                FontSize="18"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center" Margin="12,0,0,0">
+                            <TextBlock Text="Always on Top" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                            <TextBlock
+                                Text="Keep the window above all other windows."
+                                Opacity="0.6"
+                                TextWrapping="Wrap"
+                                Style="{StaticResource CaptionTextBlockStyle}" />
+                        </StackPanel>
+                        <ToggleSwitch
+                            x:Name="AlwaysOnTopToggle"
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            OnContent=""
+                            OffContent="" />
+                    </Grid>
+                </Border>
+
                 <Button
                     Style="{StaticResource AccentButtonStyle}"
                     CornerRadius="6"
