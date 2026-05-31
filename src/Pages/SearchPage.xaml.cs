@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -45,7 +47,7 @@ public sealed partial class SearchPage : Page
 
 
     public SearchViewModel ViewModel { get; }
-    private CancellationTokenSource? _notifyCts;
+    private CancellationTokenSource? _copiedCts;
     private readonly SettingsService _settings;
 
     public string CurrentHotkey => _settings.Current.Hotkey;
@@ -129,7 +131,7 @@ public sealed partial class SearchPage : Page
     {
         if (e.Key == VirtualKey.Enter && ResultsList.SelectedItem is SearchResult result)
         {
-            ActivateResult(result);
+            ActivateResult(result, ResultsList.ContainerFromItem(result) as FrameworkElement);
             e.Handled = true;
         }
         else if (e.Key == VirtualKey.Up && ResultsList.SelectedIndex == 0)
@@ -142,20 +144,20 @@ public sealed partial class SearchPage : Page
     private void ResultsList_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is SearchResult result)
-            ActivateResult(result);
+            ActivateResult(result, ResultsList.ContainerFromItem(result) as FrameworkElement);
     }
 
     private void PinnedList_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is SearchResult result)
-            ActivateResult(result);
+            ActivateResult(result, PinnedList.ContainerFromItem(result) as FrameworkElement);
     }
 
     private void PinnedList_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Enter && PinnedList.SelectedItem is SearchResult result)
         {
-            ActivateResult(result);
+            ActivateResult(result, PinnedList.ContainerFromItem(result) as FrameworkElement);
             e.Handled = true;
         }
         else if (e.Key == VirtualKey.Up && PinnedList.SelectedIndex == 0)
@@ -165,13 +167,31 @@ public sealed partial class SearchPage : Page
         }
     }
 
-    private void ActivateResult(SearchResult result)
+    private void ActivateResult(SearchResult result, FrameworkElement? container = null)
     {
         if (string.IsNullOrEmpty(result.CurrentUrl)) return;
         var data = new DataPackage();
         data.SetText(result.CurrentUrl);
         Clipboard.SetContent(data);
-        ShowNotification("URL copied to clipboard.", InfoBarSeverity.Success);
+        // Prefer anchoring to the copy button inside the row so the card appears in the same
+        // spot regardless of whether the copy came from a click or a keyboard shortcut.
+        var anchor = (container is not null ? FindCopyButton(container) : null)
+                     ?? container
+                     ?? (FrameworkElement)ResultsList;
+        ShowCopiedFlyout(anchor);
+    }
+
+    private static FrameworkElement? FindCopyButton(DependencyObject parent)
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is Button { Content: SymbolIcon { Symbol: Symbol.Copy } } btn)
+                return btn;
+            if (FindCopyButton(child) is { } found)
+                return found;
+        }
+        return null;
     }
 
     private void ViewDetails_Click(object sender, RoutedEventArgs e)
@@ -193,16 +213,52 @@ public sealed partial class SearchPage : Page
             var data = new DataPackage();
             data.SetText(result.CurrentUrl);
             Clipboard.SetContent(data);
-            ShowNotification("URL copied to clipboard.", InfoBarSeverity.Success);
+            ShowCopiedFlyout(btn);
         }
     }
 
-    private void ShowNotification(string message, InfoBarSeverity severity = InfoBarSeverity.Success)
+    private void ShowCopiedFlyout(FrameworkElement anchor)
     {
-        _notifyCts?.Cancel();
-        _notifyCts?.Dispose();
-        _notifyCts = new CancellationTokenSource();
-        _ = Helpers.NotificationHelper.ShowAsync(StatusBar, message, severity, _notifyCts.Token);
+        _copiedCts?.Cancel();
+        _copiedCts?.Dispose();
+        _copiedCts = new CancellationTokenSource();
+        var token = _copiedCts.Token;
+
+        // Local flag shared between the Closed handler and DismissAfterAsync so we can tell
+        // whether the flyout was dismissed programmatically (auto-hide / new copy) vs by the
+        // user pressing Escape (light-dismiss), in which case we should also hide the window.
+        bool programmatic = false;
+
+        var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        content.Children.Add(new SymbolIcon { Symbol = Symbol.Accept });
+        content.Children.Add(new TextBlock { Text = "Copied!", VerticalAlignment = VerticalAlignment.Center });
+
+        var flyout = new Flyout { Content = content };
+        flyout.Closed += (_, _) =>
+        {
+            if (!programmatic &&
+                InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Escape)
+                    .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
+            {
+                _copiedCts?.Cancel();
+                App.MainWindow?.AppWindow.Hide();
+            }
+        };
+        flyout.ShowAt(anchor, new FlyoutShowOptions
+        {
+            Placement = FlyoutPlacementMode.Left,
+            ShowMode = FlyoutShowMode.Transient
+        });
+
+        _ = DismissAfterAsync(flyout, token, () => programmatic = true);
+    }
+
+    private static async Task DismissAfterAsync(Flyout flyout, CancellationToken token, Action beforeHide)
+    {
+        try { await Task.Delay(1500, token); }
+        catch (OperationCanceledException) { }
+        beforeHide();
+        flyout.Hide();
     }
 
     private async void TogglePin_Click(object sender, RoutedEventArgs e)

@@ -394,15 +394,5 @@
             </StackPanel>
         </Grid>
 
-        <!-- Floating notification -->
-        <InfoBar
-            x:Name="StatusBar"
-            Grid.RowSpan="3"
-            IsOpen="False"
-            IsClosable="True"
-            VerticalAlignment="Bottom"
-            HorizontalAlignment="Center"
-            MaxWidth="480"
-            Margin="0,0,0,24" />
     </Grid>
 </Page>

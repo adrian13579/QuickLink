@@ -14,6 +14,7 @@ public sealed partial class ResourceDetailPage : Page
 {
     public ManageViewModel ViewModel { get; }
     private CancellationTokenSource? _notifyCts;
+    private CancellationTokenSource? _copiedCts;
 
     public ResourceDetailPage()
     {
@@ -156,8 +157,36 @@ public sealed partial class ResourceDetailPage : Page
             var data = new DataPackage();
             data.SetText(url);
             Clipboard.SetContent(data);
-            ShowNotification("URL copied to clipboard.", InfoBarSeverity.Success);
+            ShowCopiedFlyout(btn);
         }
+    }
+
+    private void ShowCopiedFlyout(FrameworkElement anchor)
+    {
+        _copiedCts?.Cancel();
+        _copiedCts?.Dispose();
+        _copiedCts = new CancellationTokenSource();
+        var token = _copiedCts.Token;
+
+        var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        content.Children.Add(new SymbolIcon { Symbol = Symbol.Accept });
+        content.Children.Add(new TextBlock { Text = "Copied!", VerticalAlignment = VerticalAlignment.Center });
+
+        var flyout = new Flyout { Content = content };
+        flyout.ShowAt(anchor, new FlyoutShowOptions
+        {
+            Placement = FlyoutPlacementMode.Left,
+            ShowMode = FlyoutShowMode.Transient
+        });
+
+        _ = DismissAfterAsync(flyout, token);
+    }
+
+    private static async Task DismissAfterAsync(Flyout flyout, CancellationToken token)
+    {
+        try { await Task.Delay(1500, token); }
+        catch (OperationCanceledException) { }
+        flyout.Hide();
     }
 
     private async void SetCurrent_Click(object sender, RoutedEventArgs e)
