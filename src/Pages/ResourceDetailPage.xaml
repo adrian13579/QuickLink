@@ -76,6 +76,7 @@
                             <TextBox Text="{x:Bind ViewModel.EditTags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CornerRadius="6" />
                         </StackPanel>
 
+                        <ToggleSwitch Header="Pinned" IsOn="{x:Bind ViewModel.EditIsPinned, Mode=TwoWay}" />
                         <ToggleSwitch Header="Deprecated" IsOn="{x:Bind ViewModel.EditIsDeprecated, Mode=TwoWay}" />
                     </StackPanel>
                 </Border>

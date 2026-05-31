@@ -17,6 +17,7 @@ public partial class SearchViewModel : ObservableObject
     private string _searchText = string.Empty;
 
     public ObservableCollection<SearchResult> Results { get; } = [];
+    public ObservableCollection<SearchResult> PinnedResources { get; } = [];
 
     public SearchViewModel(SearchService search, SettingsService settings)
     {
@@ -28,6 +29,8 @@ public partial class SearchViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasQuery));
         OnPropertyChanged(nameof(ShowIdle));
+        OnPropertyChanged(nameof(ShowPinned));
+        OnPropertyChanged(nameof(ShowIdleEmpty));
         if (!string.IsNullOrWhiteSpace(value))
         {
             _searchPending = true;
@@ -45,6 +48,9 @@ public partial class SearchViewModel : ObservableObject
     public bool ShowNoResults => HasQuery && IsEmpty && !_searchPending;
     public bool HasResults => HasQuery && !IsEmpty;
     public int ResultCount => Results.Count;
+    public bool HasPinned => PinnedResources.Count > 0;
+    public bool ShowPinned => ShowIdle && HasPinned;
+    public bool ShowIdleEmpty => ShowIdle && !HasPinned;
 
     public async Task LoadResultsAsync(string query, CancellationToken ct = default)
     {
@@ -58,6 +64,7 @@ public partial class SearchViewModel : ObservableObject
                 OnPropertyChanged(nameof(ShowNoResults));
                 OnPropertyChanged(nameof(HasResults));
                 OnPropertyChanged(nameof(ResultCount));
+                await LoadPinnedAsync();
                 return;
             }
             await Task.Delay(150, ct);
@@ -73,6 +80,17 @@ public partial class SearchViewModel : ObservableObject
             OnPropertyChanged(nameof(ResultCount));
         }
         catch (OperationCanceledException) { }
+    }
+
+    public async Task LoadPinnedAsync()
+    {
+        var pinned = await _search.GetPinnedAsync();
+        PinnedResources.Clear();
+        foreach (var p in pinned)
+            PinnedResources.Add(p);
+        OnPropertyChanged(nameof(HasPinned));
+        OnPropertyChanged(nameof(ShowPinned));
+        OnPropertyChanged(nameof(ShowIdleEmpty));
     }
 
     public bool OpenInBrowser => _settings.Current.DefaultAction == "OpenInBrowser";

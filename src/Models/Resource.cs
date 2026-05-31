@@ -22,6 +22,9 @@ public partial class Resource : ObservableObject
     private bool _isDeprecated;
 
     [ObservableProperty]
+    private bool _isPinned;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentUrl))]
     private Guid? _currentUrlId;
 

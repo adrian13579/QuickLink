@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using QuickLink.Models;
 using QuickLink.Services;
 using QuickLink.ViewModels;
@@ -12,6 +14,36 @@ namespace QuickLink.Pages;
 
 public sealed partial class SearchPage : Page
 {
+    // Attached property — set on the name TextBlock in the DataTemplate to apply match highlights
+    public static readonly DependencyProperty HighlightRangesProperty =
+        DependencyProperty.RegisterAttached(
+            "HighlightRanges",
+            typeof(List<HighlightRange>),
+            typeof(SearchPage),
+            new PropertyMetadata(null, OnHighlightRangesChanged));
+
+    public static void SetHighlightRanges(DependencyObject obj, List<HighlightRange> value) =>
+        obj.SetValue(HighlightRangesProperty, value);
+
+    public static List<HighlightRange> GetHighlightRanges(DependencyObject obj) =>
+        (List<HighlightRange>)obj.GetValue(HighlightRangesProperty);
+
+    private static void OnHighlightRangesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not TextBlock tb) return;
+        tb.TextHighlighters.Clear();
+        if (e.NewValue is not List<HighlightRange> { Count: > 0 } ranges) return;
+        var highlighter = new TextHighlighter();
+        if (Application.Current.Resources.TryGetValue("AccentFillColorDefaultBrush", out var bg) && bg is Brush bgBrush)
+            highlighter.Background = bgBrush;
+        if (Application.Current.Resources.TryGetValue("TextOnAccentFillColorPrimaryBrush", out var fg) && fg is Brush fgBrush)
+            highlighter.Foreground = fgBrush;
+        foreach (var r in ranges)
+            highlighter.Ranges.Add(new TextRange { StartIndex = r.StartIndex, Length = r.Length });
+        tb.TextHighlighters.Add(highlighter);
+    }
+
+
     public SearchViewModel ViewModel { get; }
     private CancellationTokenSource? _notifyCts;
     private readonly SettingsService _settings;
@@ -102,6 +134,12 @@ public sealed partial class SearchPage : Page
     }
 
     private void ResultsList_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is SearchResult result)
+            ActivateResult(result);
+    }
+
+    private void PinnedList_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is SearchResult result)
             ActivateResult(result);

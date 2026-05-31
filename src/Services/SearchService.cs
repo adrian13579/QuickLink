@@ -15,6 +15,16 @@ public class SearchService(IResourceRepository repo)
     private SearchEntry[] _index = [];
     private long _indexVersion = -1;
 
+    public async Task<IReadOnlyList<SearchResult>> GetPinnedAsync()
+    {
+        var index = await GetIndexAsync();
+        return index
+            .Where(e => e.Resource.IsPinned)
+            .OrderBy(e => e.Resource.Name)
+            .Select(e => ToResult(e, 1.0))
+            .ToList();
+    }
+
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(string query)
     {
         var index = await GetIndexAsync();
@@ -36,7 +46,7 @@ public class SearchService(IResourceRepository repo)
             .OrderByDescending(x => x.score)
             .ThenBy(x => x.entry.Resource.IsDeprecated)
             .Take(50)
-            .Select(x => ToResult(x.entry, x.score))
+            .Select(x => ToResult(x.entry, x.score, q))
             .ToList();
     }
 
@@ -58,14 +68,31 @@ public class SearchService(IResourceRepository repo)
         [.. r.Tags.Select(t => t.ToLowerInvariant())],
         (r.CurrentUrl?.Url ?? r.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url ?? string.Empty).ToLowerInvariant());
 
-    private static SearchResult ToResult(SearchEntry e, double score) => new()
+    private static SearchResult ToResult(SearchEntry e, double score, string? query = null) => new()
     {
         Resource = e.Resource,
         Score = score,
         CurrentUrl = e.Resource.CurrentUrl?.Url
             ?? e.Resource.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url
-            ?? string.Empty
+            ?? string.Empty,
+        MatchRanges = string.IsNullOrEmpty(query) ? [] : GetNameRanges(e.Resource.Name, query)
     };
+
+    private static List<HighlightRange> GetNameRanges(string name, string query)
+    {
+        var lower = name.ToLowerInvariant();
+        var idx = lower.IndexOf(query, StringComparison.Ordinal);
+        if (idx >= 0)
+            return [new HighlightRange { StartIndex = idx, Length = query.Length }];
+        // Fall back to subsequence positions
+        var result = new List<HighlightRange>();
+        int qi = 0;
+        for (int i = 0; i < lower.Length && qi < query.Length; i++)
+        {
+            if (lower[i] == query[qi]) { result.Add(new HighlightRange { StartIndex = i, Length = 1 }); qi++; }
+        }
+        return qi == query.Length ? result : [];
+    }
 
     private static double ScoreEntry(SearchEntry e, string query)
     {

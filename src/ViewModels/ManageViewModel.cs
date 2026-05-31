@@ -19,6 +19,7 @@ public partial class ManageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(EditDescription))]
     [NotifyPropertyChangedFor(nameof(EditTags))]
     [NotifyPropertyChangedFor(nameof(EditIsDeprecated))]
+    [NotifyPropertyChangedFor(nameof(EditIsPinned))]
     private Resource? _selectedResource;
 
     [ObservableProperty]
@@ -28,28 +29,30 @@ public partial class ManageViewModel : ObservableObject
 
     public bool IsDirty { get; set; }
 
-    private (string Name, string Description, List<string> Tags, bool IsDeprecated)? _snapshot;
+    private (string Name, string Description, List<string> Tags, bool IsDeprecated, bool IsPinned)? _snapshot;
 
     partial void OnSelectedResourceChanged(Resource? value)
     {
         IsDirty = false;
         _snapshot = value is null
             ? null
-            : (value.Name, value.Description, [.. value.Tags], value.IsDeprecated);
+            : (value.Name, value.Description, [.. value.Tags], value.IsDeprecated, value.IsPinned);
     }
 
     public void DiscardChanges()
     {
         IsDirty = false;
         if (SelectedResource is null || _snapshot is null) return;
-        SelectedResource.Name        = _snapshot.Value.Name;
-        SelectedResource.Description = _snapshot.Value.Description;
-        SelectedResource.Tags        = _snapshot.Value.Tags;
+        SelectedResource.Name         = _snapshot.Value.Name;
+        SelectedResource.Description  = _snapshot.Value.Description;
+        SelectedResource.Tags         = _snapshot.Value.Tags;
         SelectedResource.IsDeprecated = _snapshot.Value.IsDeprecated;
+        SelectedResource.IsPinned     = _snapshot.Value.IsPinned;
         OnPropertyChanged(nameof(EditName));
         OnPropertyChanged(nameof(EditDescription));
         OnPropertyChanged(nameof(EditTags));
         OnPropertyChanged(nameof(EditIsDeprecated));
+        OnPropertyChanged(nameof(EditIsPinned));
     }
 
     public string EditName
@@ -102,6 +105,20 @@ public partial class ManageViewModel : ObservableObject
             if (SelectedResource != null && SelectedResource.IsDeprecated != value)
             {
                 SelectedResource.IsDeprecated = value;
+                IsDirty = true;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool EditIsPinned
+    {
+        get => SelectedResource?.IsPinned ?? false;
+        set
+        {
+            if (SelectedResource != null && SelectedResource.IsPinned != value)
+            {
+                SelectedResource.IsPinned = value;
                 IsDirty = true;
                 OnPropertyChanged();
             }
