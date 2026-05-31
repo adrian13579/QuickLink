@@ -13,6 +13,12 @@ public class SearchService(IResourceRepository repo)
     private SearchEntry[] _index = [];
     private long _indexVersion = -1;
 
+    public async Task TogglePinAsync(Resource resource)
+    {
+        resource.IsPinned = !resource.IsPinned;
+        await repo.SaveAsync(resource);
+    }
+
     public async Task<IReadOnlyList<SearchResult>> GetPinnedAsync()
     {
         var index = await GetIndexAsync();

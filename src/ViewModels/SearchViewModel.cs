@@ -82,6 +82,12 @@ public partial class SearchViewModel : ObservableObject
         catch (OperationCanceledException) { }
     }
 
+    public async Task TogglePinAsync(SearchResult result)
+    {
+        await _search.TogglePinAsync(result.Resource);
+        await LoadPinnedAsync();
+    }
+
     public async Task LoadPinnedAsync()
     {
         var pinned = await _search.GetPinnedAsync();

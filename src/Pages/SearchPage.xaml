@@ -10,6 +10,10 @@
     mc:Ignorable="d"
     Background="Transparent">
 
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Modifiers="Control" Key="P" Invoked="PinResource_Accelerator" />
+    </Page.KeyboardAccelerators>
+
     <Page.Resources>
         <Style x:Key="DeprecatedTextStyle" TargetType="TextBlock">
             <Setter Property="TextDecorations" Value="Strikethrough" />
@@ -98,6 +102,17 @@
                             Foreground="{ThemeResource SystemFillColorCautionBrush}" />
                     </Border>
                     <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right">
+                        <Button
+                            Width="32"
+                            Height="32"
+                            Padding="0"
+                            CornerRadius="6"
+                            Style="{x:Bind local:SearchPage.GetPinButtonStyle(Resource.IsPinned), Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind local:SearchPage.GetPinTooltip(Resource.IsPinned), Mode=OneWay}"
+                            Click="TogglePin_Click"
+                            CommandParameter="{x:Bind}">
+                            <FontIcon Glyph="{x:Bind local:SearchPage.GetPinGlyph(Resource.IsPinned), Mode=OneWay}" FontSize="14" />
+                        </Button>
                         <Button
                             Width="32"
                             Height="32"
@@ -330,6 +345,17 @@
                         <TextBlock Text="Ctrl+E" FontSize="10" Opacity="0.65" />
                     </Border>
                     <TextBlock Text="Edit" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="6,2">
+                        <TextBlock Text="Ctrl+P" FontSize="10" Opacity="0.65" />
+                    </Border>
+                    <TextBlock Text="Pin" FontSize="11" Opacity="0.45" VerticalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                     <Border

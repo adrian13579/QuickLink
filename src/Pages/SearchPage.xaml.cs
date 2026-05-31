@@ -101,6 +101,11 @@ public sealed partial class SearchPage : Page
 
     public static double GetTagOpacity(bool isMatched) => isMatched ? 1.0 : 0.35;
 
+    public static string GetPinGlyph(bool isPinned) => isPinned ? "" : "";
+    public static string GetPinTooltip(bool isPinned) => isPinned ? "Unpin (Ctrl+P)" : "Pin (Ctrl+P)";
+    public static Style? GetPinButtonStyle(bool isPinned) =>
+        isPinned && Application.Current.Resources.TryGetValue("AccentButtonStyle", out var s) ? s as Style : null;
+
     private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Down && ResultsList.Items.Count > 0)
@@ -187,6 +192,15 @@ public sealed partial class SearchPage : Page
         _ = Helpers.NotificationHelper.ShowAsync(StatusBar, message, severity, _notifyCts.Token);
     }
 
+    private async void TogglePin_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.CommandParameter is SearchResult result)
+        {
+            await ViewModel.TogglePinAsync(result);
+            ShowNotification(result.Resource.IsPinned ? "Pinned." : "Unpinned.");
+        }
+    }
+
     private void OpenUrl_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is SearchResult result && !string.IsNullOrEmpty(result.CurrentUrl))
@@ -205,5 +219,16 @@ public sealed partial class SearchPage : Page
         if (ResultsList.SelectedItem is SearchResult result)
             App.NavigateToManageResource(result.Resource.Id);
         args.Handled = true;
+    }
+
+    private async void PinResource_Accelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        args.Handled = true;
+        var result = ResultsList.SelectedItem as SearchResult ?? PinnedList.SelectedItem as SearchResult;
+        if (result is not null)
+        {
+            await ViewModel.TogglePinAsync(result);
+            ShowNotification(result.Resource.IsPinned ? "Pinned." : "Unpinned.");
+        }
     }
 }
