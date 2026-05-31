@@ -99,6 +99,8 @@ public sealed partial class SearchPage : Page
 
     public static string FormatCount(int count) => count == 1 ? "1 result" : $"{count} results";
 
+    public static double GetTagOpacity(bool isMatched) => isMatched ? 1.0 : 0.35;
+
     private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Down && ResultsList.Items.Count > 0)

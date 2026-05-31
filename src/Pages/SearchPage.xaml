@@ -58,21 +58,22 @@
                         Opacity="0.6"
                         FontSize="12"
                         TextTrimming="CharacterEllipsis" />
-                    <ItemsControl ItemsSource="{x:Bind Resource.Tags}">
+                    <ItemsControl ItemsSource="{x:Bind TagResults}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="4" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
+                            <DataTemplate x:DataType="models:TagResult">
                                 <Border
                                     Background="{ThemeResource AccentFillColorDefaultBrush}"
                                     CornerRadius="10"
                                     Padding="8,2"
-                                    Margin="0,3,0,0">
+                                    Margin="0,3,0,0"
+                                    Opacity="{x:Bind local:SearchPage.GetTagOpacity(IsMatched)}">
                                     <TextBlock
-                                        Text="{x:Bind}"
+                                        Text="{x:Bind Text}"
                                         FontSize="10"
                                         Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
                                 </Border>

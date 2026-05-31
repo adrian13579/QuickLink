@@ -6,4 +6,5 @@ public class SearchResult
     public double Score { get; set; }
     public string CurrentUrl { get; set; } = string.Empty;
     public List<HighlightRange> MatchRanges { get; set; } = [];
+    public List<TagResult> TagResults { get; set; } = [];
 }

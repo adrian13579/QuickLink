@@ -8,9 +8,7 @@ public class SearchService(IResourceRepository repo)
     private sealed record SearchEntry(
         Resource Resource,
         string NameLower,
-        string DescLower,
-        string[] TagsLower,
-        string UrlLower);
+        string[] TagsLower);
 
     private SearchEntry[] _index = [];
     private long _indexVersion = -1;
@@ -64,9 +62,7 @@ public class SearchService(IResourceRepository repo)
     private static SearchEntry BuildEntry(Resource r) => new(
         r,
         r.Name.ToLowerInvariant(),
-        r.Description.ToLowerInvariant(),
-        [.. r.Tags.Select(t => t.ToLowerInvariant())],
-        (r.CurrentUrl?.Url ?? r.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url ?? string.Empty).ToLowerInvariant());
+        [.. r.Tags.Select(t => t.ToLowerInvariant())]);
 
     private static SearchResult ToResult(SearchEntry e, double score, string? query = null) => new()
     {
@@ -75,8 +71,16 @@ public class SearchService(IResourceRepository repo)
         CurrentUrl = e.Resource.CurrentUrl?.Url
             ?? e.Resource.Urls.FirstOrDefault(u => !u.IsDeprecated)?.Url
             ?? string.Empty,
-        MatchRanges = string.IsNullOrEmpty(query) ? [] : GetNameRanges(e.Resource.Name, query)
+        MatchRanges = string.IsNullOrEmpty(query) ? [] : GetNameRanges(e.Resource.Name, query),
+        TagResults = BuildTagResults(e, query)
     };
+
+    private static List<TagResult> BuildTagResults(SearchEntry e, string? query) =>
+        [.. e.TagsLower.Select((tl, i) => new TagResult
+        {
+            Text = e.Resource.Tags[i],
+            IsMatched = string.IsNullOrEmpty(query) || FuzzyScore(tl, query) > 0
+        })];
 
     private static List<HighlightRange> GetNameRanges(string name, string query)
     {
@@ -97,14 +101,11 @@ public class SearchService(IResourceRepository repo)
     private static double ScoreEntry(SearchEntry e, string query)
     {
         double best = FuzzyScore(e.NameLower, query);
-        if (best < 1.0) best = Math.Max(best, FuzzyScore(e.DescLower, query) * 0.85);
         foreach (var tag in e.TagsLower)
         {
             if (best >= 1.0) break;
             best = Math.Max(best, FuzzyScore(tag, query) * 0.9);
         }
-        if (best < 1.0 && e.UrlLower.Length > 0)
-            best = Math.Max(best, FuzzyScore(e.UrlLower, query) * 0.7);
         return best;
     }
 
