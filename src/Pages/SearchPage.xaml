@@ -275,6 +275,7 @@
                 SelectionMode="Single"
                 IsItemClickEnabled="True"
                 ItemClick="PinnedList_ItemClick"
+                KeyDown="PinnedList_KeyDown"
                 ItemContainerStyle="{StaticResource ResultItemContainerStyle}"
                 ItemTemplate="{StaticResource SearchResultTemplate}" />
         </Grid>

@@ -108,11 +108,20 @@ public sealed partial class SearchPage : Page
 
     private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key == VirtualKey.Down && ResultsList.Items.Count > 0)
+        if (e.Key == VirtualKey.Down)
         {
-            ResultsList.Focus(FocusState.Keyboard);
-            ResultsList.SelectedIndex = 0;
-            e.Handled = true;
+            if (ResultsList.Items.Count > 0)
+            {
+                ResultsList.Focus(FocusState.Keyboard);
+                ResultsList.SelectedIndex = 0;
+                e.Handled = true;
+            }
+            else if (PinnedList.Items.Count > 0)
+            {
+                PinnedList.Focus(FocusState.Keyboard);
+                PinnedList.SelectedIndex = 0;
+                e.Handled = true;
+            }
         }
         else if (e.Key == VirtualKey.Escape)
         {
@@ -150,6 +159,25 @@ public sealed partial class SearchPage : Page
     {
         if (e.ClickedItem is SearchResult result)
             ActivateResult(result);
+    }
+
+    private void PinnedList_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == VirtualKey.Enter && PinnedList.SelectedItem is SearchResult result)
+        {
+            ActivateResult(result);
+            e.Handled = true;
+        }
+        else if (e.Key == VirtualKey.Up && PinnedList.SelectedIndex == 0)
+        {
+            SearchBox.Focus(FocusState.Keyboard);
+            e.Handled = true;
+        }
+        else if (e.Key == VirtualKey.Escape)
+        {
+            App.MainWindow?.AppWindow.Hide();
+            e.Handled = true;
+        }
     }
 
     private void ActivateResult(SearchResult result)
@@ -195,10 +223,7 @@ public sealed partial class SearchPage : Page
     private async void TogglePin_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is SearchResult result)
-        {
             await ViewModel.TogglePinAsync(result);
-            ShowNotification(result.Resource.IsPinned ? "Pinned." : "Unpinned.");
-        }
     }
 
     private void OpenUrl_Click(object sender, RoutedEventArgs e)
@@ -226,9 +251,6 @@ public sealed partial class SearchPage : Page
         args.Handled = true;
         var result = ResultsList.SelectedItem as SearchResult ?? PinnedList.SelectedItem as SearchResult;
         if (result is not null)
-        {
             await ViewModel.TogglePinAsync(result);
-            ShowNotification(result.Resource.IsPinned ? "Pinned." : "Unpinned.");
-        }
     }
 }
