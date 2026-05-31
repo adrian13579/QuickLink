@@ -43,6 +43,8 @@ public partial class SearchViewModel : ObservableObject
     public bool ShowIdle => !HasQuery;
     public bool IsEmpty => Results.Count == 0;
     public bool ShowNoResults => HasQuery && IsEmpty && !_searchPending;
+    public bool HasResults => HasQuery && !IsEmpty;
+    public int ResultCount => Results.Count;
 
     public async Task LoadResultsAsync(string query, CancellationToken ct = default)
     {
@@ -54,6 +56,8 @@ public partial class SearchViewModel : ObservableObject
                 Results.Clear();
                 OnPropertyChanged(nameof(IsEmpty));
                 OnPropertyChanged(nameof(ShowNoResults));
+                OnPropertyChanged(nameof(HasResults));
+                OnPropertyChanged(nameof(ResultCount));
                 return;
             }
             await Task.Delay(150, ct);
@@ -65,6 +69,8 @@ public partial class SearchViewModel : ObservableObject
                 Results.Add(r);
             OnPropertyChanged(nameof(IsEmpty));
             OnPropertyChanged(nameof(ShowNoResults));
+            OnPropertyChanged(nameof(HasResults));
+            OnPropertyChanged(nameof(ResultCount));
         }
         catch (OperationCanceledException) { }
     }

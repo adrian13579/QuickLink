@@ -92,7 +92,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="NewUrlBox" PlaceholderText="https://..." CornerRadius="6" />
+                        <TextBox x:Name="NewUrlBox" PlaceholderText="https://..." CornerRadius="6" KeyDown="NewUrlBox_KeyDown" />
                         <Button
                             Grid.Column="1"
                             Style="{StaticResource AccentButtonStyle}"

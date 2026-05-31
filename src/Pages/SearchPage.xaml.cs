@@ -65,6 +65,8 @@ public sealed partial class SearchPage : Page
     public static string GetInitial(string name) =>
         string.IsNullOrEmpty(name) ? "?" : name[..1].ToUpperInvariant();
 
+    public static string FormatCount(int count) => count == 1 ? "1 result" : $"{count} results";
+
     private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Down && ResultsList.Items.Count > 0)

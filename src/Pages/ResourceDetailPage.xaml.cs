@@ -124,6 +124,15 @@ public sealed partial class ResourceDetailPage : Page
         }
     }
 
+    private void NewUrlBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter)
+        {
+            e.Handled = true;
+            AddUrl_Click(sender, e);
+        }
+    }
+
     private async void AddUrl_Click(object sender, RoutedEventArgs e)
     {
         var url = NewUrlBox.Text.Trim();
