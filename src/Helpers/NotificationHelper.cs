@@ -12,16 +12,32 @@ internal static class NotificationHelper
         InfoBarSeverity severity,
         CancellationToken token)
     {
+        var visual = ElementCompositionPreview.GetElementVisual(bar);
+
+        // Stop any in-progress animation and snap to neutral so we start from a known state
+        visual.StopAnimation("Opacity");
+        visual.StopAnimation("Offset");
+        visual.Opacity = 1f;
+        visual.Offset = Vector3.Zero;
+
         bar.Message = message;
         bar.Severity = severity;
+
+        var needsAnimateIn = !bar.IsOpen;
         bar.IsOpen = true;
 
-        AnimateIn(bar);
+        // Only animate in when opening from closed; if already visible just update the content
+        if (needsAnimateIn)
+            AnimateIn(bar);
 
         try
         {
             await Task.Delay(3000, token);
+            // Guard against the race where the delay finishes just as a new notification cancels us
+            token.ThrowIfCancellationRequested();
             await AnimateOutAsync(bar, token);
+            visual.Opacity = 1f;
+            visual.Offset = Vector3.Zero;
             bar.IsOpen = false;
         }
         catch (OperationCanceledException) { }

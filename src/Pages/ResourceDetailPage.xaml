@@ -8,7 +8,8 @@
     xmlns:models="using:QuickLink.Models"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="Transparent">
+    Background="Transparent"
+    KeyboardAcceleratorPlacementMode="Hidden">
 
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="Escape" Invoked="Escape_Invoked" />

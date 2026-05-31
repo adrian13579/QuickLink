@@ -8,7 +8,8 @@
     xmlns:models="using:QuickLink.Models"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="Transparent">
+    Background="Transparent"
+    KeyboardAcceleratorPlacementMode="Hidden">
 
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="Escape" Invoked="Escape_Accelerator" />
@@ -217,7 +218,8 @@
             SelectionMode="Single"
             IsItemClickEnabled="True"
             ItemClick="ResultsList_ItemClick"
-            KeyDown="ResultsList_KeyDown">
+            KeyDown="ResultsList_KeyDown"
+            KeyboardAcceleratorPlacementMode="Hidden">
             <ListView.KeyboardAccelerators>
                 <KeyboardAccelerator Modifiers="Control" Key="Enter" Invoked="OpenInBrowser_Accelerator" />
                 <KeyboardAccelerator Modifiers="Control" Key="E" Invoked="EditResource_Accelerator" />
